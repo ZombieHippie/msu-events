@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  .page-header
+    img(src="/graphics/missouri-state-events-logo.png" style="padding:10px" alt="MissouriState.events")
+    each page, index in views
+      - page = page.slice(0,-5)
+      if index !== 0
+        span &nbsp; - &nbsp;
+      a(href=page)=page

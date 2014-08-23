@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var session = require('express-session')
 
-var simpleRoute = require('./routes/')
+var testRoute = require('./routes/test.js')
 
 var app = express()
 
@@ -25,10 +25,12 @@ app.use(require('./lib/coffee-middleware')({
     src: __dirname + '/static/coffee',
     prefix: '/coffee'
 }))
-app.use(express.static(path.join(__dirname, 'static')))
 
 /// Routes
-app.use('/', simpleRoute)
+app.use('/test', testRoute)
+
+app.use(express.static(path.join(__dirname, 'static')))
+
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

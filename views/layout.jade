@@ -3,10 +3,16 @@ head
     title=title
   link(href="/vendors/bootstrap-3.1.1/bootstrap.min.css", rel="stylesheet")
   meta(http-equiv="Content-Type" content="text/html;charset=utf-8")
+  style.
+    .container { max-width: 750px; }
+    .mono { font-family: "Courier New" }
   block head
 body
-  block content
+  include header-group
+  .container
+    block content
   footer
+    include footer-group
     //-
       script(src="/vendors/jquery-2.1.1/jquery-2.1.1.min.js")
       script(src="/vendors/bootstrap-3.1.1/bootstrap.min.js")
