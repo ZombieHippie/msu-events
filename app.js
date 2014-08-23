@@ -28,6 +28,8 @@ app.use(require('./lib/coffee-middleware')({
 
 /// Routes
 app.use('/test', testRoute)
+app.use('/test-calendars', require('./routes/test-calendars.coffee'))
+app.use('/test-organizations', require('./routes/test-organizations.coffee'))
 
 app.use(express.static(path.join(__dirname, 'static')))
 
