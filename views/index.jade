@@ -2,19 +2,20 @@ extends layout
 
 block head
   style.
-    body { color: whitesmoke; background: maroon}
-    .container { max-width: 750px }
+    .container { max-width: 750px; border-radius: 6px; }
     .mono { font-family: "Courier New" }
 
 block content
   .container
-    .page-header.text-center
-      h1 MSU Events
-      //-
-        each page, index in views
-          - page = page.slice(0,-5)
-          if index !== 0
-            span &nbsp; - &nbsp;
-          a(href=page)=page
-      small Stay informed about events on your campus.
+    .row
+      .col-sm-6
+        img(src="/graphics/missouri-state-events-logo.png" style="padding:10px" alt="MissouriState.events")
+        //-
+          each page, index in views
+            - page = page.slice(0,-5)
+            if index !== 0
+              span &nbsp; - &nbsp;
+            a(href=page)=page
+      .col-sm-6
+        small Stay informed about events on your campus.
 block footer
