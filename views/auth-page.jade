@@ -1,0 +1,31 @@
+extends layout
+block head
+  link(href="/vendors/animate/animate.min.css" rel="stylesheet")
+  style.
+    .auth-box { max-width: 520px; margin: 5% auto 0; transition: width 1s, height 1s;}
+    .auth-box .smoke { padding: 20px; border-radius: 6px }
+    .auth-box .form-control, .auth-box .input-group { margin-bottom: 10px; }
+    .auth-box .input-group .form-control { margin-bottom: 0; }
+block content
+  .auth-box.text-center.animated(class=(failed?"shake":loggedOut?"fadeInDown":"bounceInDown"))
+    h1 Organization #{action}
+    .smoke
+      form(method="POST" data-action=action)
+        .input-group
+          span.input-group-addon Organization Name
+          input.form-control(type="text" placeholder="name" name="name")
+        .input-group
+          span.input-group-addon Owner Email
+          input.form-control(type="email" placeholder="email" name="email")
+        .input-group
+          span.input-group-addon Password
+          input.form-control(type="password" placeholder="password" name="password")
+        input.hidden(name="action" value=action)
+        input.btn.btn-primary(type="submit" value=submit)
+        br
+    if loggedOut
+      .animated.fadeInDown
+        .alert-success.alert Logged out
+    else if failed
+      .animated.fadeInDown
+        .alert-danger.alert #{action} failed #{message}

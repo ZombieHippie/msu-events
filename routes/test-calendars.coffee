@@ -3,6 +3,6 @@ router = express.Router()
 
 router.get '/', (req, res) ->
   stack = []
-  res.render("error", { title: "test-calendars", message: "List of calendars", stack })
+  res.render("error", { title: "test-calendars", message: "List of calendars", error: { stack }})
 
 module.exports = router

@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  each page in pages
+    h3
+      a(href=directory + "/" + page.name)=page.disp
+    p=page.description

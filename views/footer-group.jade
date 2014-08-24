@@ -5,6 +5,35 @@ style.
     .login-group { position:fixed; top: 0; right: 5%; text-align: left; }
   }
   .login-group a.btn { margin:6px }
+  .footer-divider { border-top: 1px solid rgba(0,0,0,.1); margin: 10px 0; }
+  .footer-navigation a { color: #222 }
+  .footer-navigation .col-md-4.col-sm-6 {  float: none; display: inline-block; }
+.footer-divider
 .login-group
   a.btn.btn-info(href="/register") Register
   a.btn.btn-primary(href="/login") Login
+.container.footer-navigation
+  .row.text-center
+    .col-md-4.col-sm-6.text-center
+      br
+      strong Navigation
+      br
+      a(href="/") Browse Events
+      br
+      a(href="/login") Organization Log in
+      br
+      a(href="/register") Organization Registration
+    .col-md-4.col-sm-6.text-center
+      br
+      strong Tutorials
+      br
+      a(href="/tutorials/create-google-calendar") Create a Google Calendar
+      br
+      a(href="/tutorials/linking-google-calendar") Link with Google Calendar
+    .col-md-4.col-sm-6.text-center
+      br
+      strong Contact
+      br
+      a(href="/contact/report") Report an organization
+      br
+      a(href="/contact/developer") Contact the developer

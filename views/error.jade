@@ -2,7 +2,9 @@ extends layout
 
 block content
   div(style="text-align:center;")
-    a(href="/index") index
+    a(href="/") index
+    !="&nbsp;-&nbsp;"
+    a(href="/test") test
   h1= message
   h2= error?error.status:void(0)
   if error && error.message

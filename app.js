@@ -26,6 +26,22 @@ app.use(require('./lib/coffee-middleware')({
     prefix: '/coffee'
 }))
 
+/// Pages
+var markedMw = require('./lib/marked-middleware.js')
+tutorialPages = [
+    {
+        name: "create-google-calendar",
+        disp: "How to create a new Google Calendar",
+        description: "Learn how to create a calendar for organizing your organizations events."
+    },
+    {
+        name: "linking-google-calendar-with-your-organization",
+        disp: "How to link an existing Google Calendar with your organization",
+        description: "Learn how to link an existing Google Calendar with your organization."
+    }
+]
+app.use('/tutorials', markedMw('tutorials', tutorialPages))
+
 /// Routes
 app.use('/test', testRoute)
 app.use('/test-calendars', require('./routes/test-calendars.coffee'))
