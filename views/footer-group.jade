@@ -11,7 +11,9 @@ style.
 .footer-divider
 .login-group
   if org
-    strong=org.email
+    em=org.email
+    | &nbsp;
+    strong=org.name
     | &nbsp;
     a.btn.btn-primary(href="/login?logout") Logout
   else
