@@ -26,6 +26,13 @@ app.use(require('./lib/coffee-middleware')({
     prefix: '/coffee'
 }))
 
+/// Preliminary locals for jade
+app.use(function (req, res, next) {
+    if (req.session.org != null)
+        res.locals.org = req.session.org
+    next()
+})
+
 /// Pages
 var markedMw = require('./lib/marked-middleware.js')
 tutorialPages = [
@@ -44,6 +51,7 @@ app.use('/tutorials', markedMw('tutorials', tutorialPages))
 
 /// Routes
 app.use('/test', testRoute)
+app.use('/login', require('./routes/login-route.coffee'))
 app.use('/test-calendars', require('./routes/test-calendars.coffee'))
 app.use('/test-organizations', require('./routes/test-organizations.coffee'))
 

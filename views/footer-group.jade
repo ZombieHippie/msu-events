@@ -10,8 +10,13 @@ style.
   .footer-navigation .col-md-4.col-sm-6 {  float: none; display: inline-block; }
 .footer-divider
 .login-group
-  a.btn.btn-info(href="/register") Register
-  a.btn.btn-primary(href="/login") Login
+  if org
+    strong=org.email
+    | &nbsp;
+    a.btn.btn-primary(href="/login?logout") Logout
+  else
+    a.btn.btn-info(href="/register") Register
+    a.btn.btn-primary(href="/login") Login
 .container.footer-navigation
   .row.text-center
     .col-md-4.col-sm-6.text-center

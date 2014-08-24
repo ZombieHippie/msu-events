@@ -11,9 +11,10 @@ block content
     h1 Organization #{action}
     .smoke
       form(method="POST" data-action=action)
-        .input-group
-          span.input-group-addon Organization Name
-          input.form-control(type="text" placeholder="name" name="name")
+        if action === "Register"
+          .input-group
+            span.input-group-addon Organization Name
+            input.form-control(type="text" placeholder="name" name="name")
         .input-group
           span.input-group-addon Owner Email
           input.form-control(type="email" placeholder="email" name="email")
