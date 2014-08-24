@@ -4,6 +4,36 @@
 
 In this tutorial we show you how to create a Google Calendar.
 
-Note that after you make a Google Calendar, you will still need to register it with your account.
+Note that after you make a Google Calendar, you will still need to register it with your organization.
+
+### 1. Open [Google Calendar](https://www.google.com/calendar)
+> Navigate to the Google Calendar website, where we will create a new calendar.
+
+![Google Calendar homescreen](/graphics/google-calendar-homescreen-0.png)
+
+### 2. Add a new Calendar
+> Click on the caret next to *My Calendars*
+
+> and click on *Create new calendar*
+
+![Create new calendar screen dialog](/graphics/google-calendar-homescreen-1-select-new-calendar.png)
+
+### 3. Configure Calendar
+> Make sure to name your calendar something short and descriptive of its purpose.
+
+> It is *very important* the you **click** ***Make this calendar public*** so that your calendar will be visible to the *missouristate.events* website, and your friends.
+
+> You can also add co-owners' emails to this screen so that they will be able to manage the organizations events.
 
 ![Create new calendar screen](/graphics/google-calendar-create-calendar-2.png)
+
+> You should encounter a warning when creating this calendar that basically describes that the general public will be able to see what you post on this calendar.
+
+![Accept public warning](/graphics/google-calendar-create-calendar-3-public-warning.png)
+
+### 4. Finish
+> Your calendar should appear under your *My Calendars* list.
+
+![After creating calendar](/graphics/google-calendar-create-calendar-4-created-calendar.png)
+
+Now that you have created your calendar, you can link this new calendar by following [the tutorial on linking calendars with your organization](/tutorials/linking-google-calendar-with-your-organization).
