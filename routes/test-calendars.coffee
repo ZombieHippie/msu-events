@@ -10,6 +10,10 @@ router.get '/', (req, res) ->
     stack = JSON.stringify calendars, null, 2
     res.render("error", { title: "test-calendars", message: "List of calendars", error: { stack }})
 
+# Refresh database of calendars
+router.get '/refresh', (req, res) ->
+  res.redirect '/'
+
 router.get '/:calendarId', (req, res) ->
   # Need to get calendar by calendar ID
   req.query.calendarId = req.params.calendarId
