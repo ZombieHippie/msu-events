@@ -3,9 +3,10 @@
     "name": "PB&J Club",
     "email": "msgzht@gmail.com",
     "password": "0",
+    "type": "Interest Group",
     "calendars": [
       {
-        "id": "1o6pap3n3ptd1mlojegh4kqnmc",
+        "id": "1o6pap3n3ptd1mlojegh4kqnmc@group.calendar.google.com",
         "name": "primary"
       }
     ]
