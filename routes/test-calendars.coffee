@@ -12,9 +12,8 @@ router.get '/', (req, res) ->
 
 router.get '/:calendarId', (req, res) ->
   # Need to get calendar by calendar ID
-  gcal.events.list {
-    calendarId: req.params.calendarId
-  }, (err, resp) ->
+  req.query.calendarId = req.params.calendarId
+  gcal.events.list req.query, (err, resp) ->
     if err? then console.log err
     stack = JSON.stringify resp, null, 2
     res.render("error", { title: "test-calendars", message: "List of calendar's events", error: { stack }})
