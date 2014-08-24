@@ -4,7 +4,10 @@
     "email": "msgzht@gmail.com",
     "password": "0",
     "calendars": [
-      "1o6pap3n3ptd1mlojegh4kqnmc"
+      {
+        "id": "1o6pap3n3ptd1mlojegh4kqnmc",
+        "name": "primary"
+      }
     ]
   }
 }

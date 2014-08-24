@@ -10,6 +10,7 @@ router.post '/', (req, res) ->
     name: req.body.name
     email: req.body.email
     password: req.body.password
+    calendars: []
   }
   Organization.register req.body.email, obj, (error, organization) ->
     if error?
