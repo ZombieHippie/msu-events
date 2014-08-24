@@ -1,6 +1,6 @@
 # How to create a new Google Calendar
 
-[Already have a Google Calendar?](/tutorials/linking-google-calendar-with-your-organization)
+[Already have a Google Calendar you want to use?](/tutorials/linking-google-calendar-with-your-organization)
 
 In this tutorial we show you how to create a Google Calendar.
 

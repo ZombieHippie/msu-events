@@ -47,6 +47,12 @@ app.use('/test', testRoute)
 app.use('/test-calendars', require('./routes/test-calendars.coffee'))
 app.use('/test-organizations', require('./routes/test-organizations.coffee'))
 
+app.use('/contact', function (req, res, next) {
+    var notImplented = new Error("Sorry, contact isn't ready yet :-(")
+    notImplented.status = 501
+    next(notImplented) 
+})
+
 app.use(express.static(path.join(__dirname, 'static')))
 
 
@@ -65,7 +71,6 @@ if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500)
         res.render('error', {
-            message: err.message,
             error: err
         })
     })
