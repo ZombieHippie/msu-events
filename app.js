@@ -48,6 +48,19 @@ tutorialPages = [
     }
 ]
 app.use('/tutorials', markedMw('tutorials', tutorialPages))
+aboutPages = [
+    {
+        name: "us",
+        disp: "About the Missouri State Events service",
+        description: "Learn more about the history of this service"
+    },
+    {
+        name: "community",
+        disp: "How Missouri State Events will benefit your community",
+        description: "Learn how this service will help connect our students together, and promote your groups' events."
+    }
+]
+app.use('/about', markedMw('about', aboutPages))
 
 /// Routes
 app.use('/test', testRoute)

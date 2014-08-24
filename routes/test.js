@@ -6,7 +6,6 @@ var path = require('path')
 var views = fs.readdirSync(path.resolve(__dirname, '../views')).map(function (E) {return "/test/" + E })
 
 router.get('/', function (req, res) {
-  console.log("hello test")
   res.render("test", { view: "test", views: views  })
 })
 
