@@ -1,6 +1,6 @@
 express = require('express')
 router = express.Router()
-{ Organization } = require '../lib/database.coffee'
+{ Organization } = require '../lib/database/database.coffee'
 
 router.get '/', (req, res) ->
   Organization.findAll (orgs) ->

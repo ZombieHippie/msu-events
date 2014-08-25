@@ -1,8 +1,7 @@
 express = require('express')
-{ readFileSync } = require 'fs'
 
 router = express.Router()
-{ Calendar } = require '../lib/database.coffee'
+{ Calendar } = require '../lib/database/database.coffee'
 gcal = require '../lib/google-calendar.js'
 
 router.get '/', (req, res) ->
