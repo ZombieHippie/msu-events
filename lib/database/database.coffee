@@ -50,6 +50,10 @@ Organization.register = (email, obj, callback) ->
     Organization.save (error) ->
       callback error, obj
 
+Organization.saveObject = (email, object, callback) ->
+  orgDB[email] = object
+  Organization.save(callback)
+
 Organization.save = (callback) ->
   str = JSON.stringify orgDB, null, 2
   fs.writeFileSync orgFiles, str, "utf8"
