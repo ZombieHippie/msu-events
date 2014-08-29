@@ -2,7 +2,7 @@ express = require('express')
 
 router = express.Router()
 { Calendar } = require '../lib/database/database.coffee'
-gcal = require '../lib/google-calendar.js'
+gcal = require '../lib/database/google-calendar.js'
 
 router.get '/', (req, res) ->
   Calendar.findAll (calendars) ->

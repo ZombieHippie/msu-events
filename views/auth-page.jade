@@ -14,7 +14,10 @@ block content
         if action === "Register"
           .input-group
             span.input-group-addon Organization Name
-            input.form-control(type="text" placeholder="name" name="name")
+            input.form-control(type="text" placeholder="name" name="name" onkeyup="document.getElementById('slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-')")
+          .input-group
+            span.input-group-addon URL handle
+            input#slug.form-control(type="text" placeholder="slug" name="slug" disabled=true title="The url friendly way to access your organization")
         .input-group
           span.input-group-addon Owner Email
           input.form-control(type="email" placeholder="email" name="email")

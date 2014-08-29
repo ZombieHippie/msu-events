@@ -1,14 +1,9 @@
 {
-  "msgzht@gmail.com": {
-    "name": "PB&J Club",
-    "email": "msgzht@gmail.com",
+  "cole@email.com": {
+    "name": "The PB&J Club",
+    "slug": "the-pb-j-club",
+    "email": "cole@email.com",
     "password": "0",
-    "type": "Interest Group",
-    "calendars": [
-      {
-        "id": "1o6pap3n3ptd1mlojegh4kqnmc@group.calendar.google.com",
-        "name": "primary"
-      }
-    ]
+    "calendars": []
   }
 }

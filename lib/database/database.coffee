@@ -3,7 +3,7 @@ fs = require 'fs'
 path = require 'path'
 { hash } = require './passhash.coffee'
 
-orgFiles = path.resolve __dirname, '../data/organizations.json'
+orgFiles = path.resolve __dirname, '../../data/organizations.json'
 orgDB = JSON.parse fs.readFileSync orgFiles, 'utf8'
 
 Calendar = {}
@@ -47,7 +47,7 @@ Organization.register = (email, obj, callback) ->
     callback err
   else
     orgDB[email] = obj
-    org.save (error) ->
+    Organization.save (error) ->
       callback error, obj
 
 Organization.save = (callback) ->

@@ -66,6 +66,7 @@ app.use('/about', markedMw('about', aboutPages))
 app.use('/test', testRoute)
 app.use('/login', require('./routes/login-route.coffee'))
 app.use('/register', require('./routes/register-route.coffee'))
+app.use('/org', require('./routes/org-route.coffee'))
 app.use('/test-calendars', require('./routes/test-calendars.coffee'))
 app.use('/test-organizations', require('./routes/test-organizations.coffee'))
 

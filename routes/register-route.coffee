@@ -8,6 +8,7 @@ router.get '/', (req, res) ->
 router.post '/', (req, res) ->
   obj = {
     name: req.body.name
+    slug: req.body.name.toLowerCase().replace(/[^a-zA-Z0-9]+/g, "-")
     email: req.body.email
     password: req.body.password
     calendars: []
