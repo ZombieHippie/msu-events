@@ -27,9 +27,15 @@ style.
       br
       a(href="/") Browse Events
       br
-      a(href="/login") Organization Log in
-      br
-      a(href="/register") Organization Registration
+      if org
+        a(href="/login?logout") Organization Log out
+        br
+        a(href="/org/" + org.slug + "/settings") Organization Settings
+        br
+      else
+        a(href="/login") Organization Log in
+        br
+        a(href="/register") Organization Registration
     .col-md-4.col-sm-6.text-center
       br
       strong Tutorials

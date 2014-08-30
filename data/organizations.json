@@ -5,5 +5,12 @@
     "email": "cole@email.com",
     "password": "0",
     "calendars": []
+  },
+  "0@0.co": {
+    "name": "Scholar's Sushi",
+    "slug": "scholar-s-sushi",
+    "email": "0@0.co",
+    "password": "0",
+    "calendars": []
   }
 }

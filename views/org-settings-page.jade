@@ -35,6 +35,9 @@ block content
     .col-sm-4
       h2 Actions
       ul
+        if !org.auth
+          li
+            a(href="?auth") Authorize Calendar
         li
           a(href="?refresh") Refresh Events
   #add-calendar-modal.modal
