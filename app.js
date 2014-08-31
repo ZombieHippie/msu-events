@@ -28,8 +28,9 @@ app.use(require('./lib/coffee-middleware')({
 
 /// Preliminary locals for jade
 app.use(function (req, res, next) {
-    if (req.session.org != null)
-        res.locals.org = req.session.org
+    if (req.session.email != null)
+        res.locals.email = req.session.email
+        res.locals.disp = req.session.disp
     next()
 })
 
@@ -64,11 +65,10 @@ app.use('/about', markedMw('about', aboutPages))
 
 /// Routes
 app.use('/test', testRoute)
-app.use('/login', require('./routes/login-route.coffee'))
-app.use('/register', require('./routes/register-route.coffee'))
-app.use('/org', require('./routes/org-route.coffee'))
-app.use('/test-calendars', require('./routes/test-calendars.coffee'))
-app.use('/test-organizations', require('./routes/test-organizations.coffee'))
+app.use('/auth', require('./routes/auth-route.coffee'))
+app.use('/organization', require('./routes/organization-route.coffee'))
+// app.use('/test-calendars', require('./routes/test-calendars.coffee'))
+// app.use('/test-organizations', require('./routes/test-organizations.coffee'))
 
 app.use('/contact', function (req, res, next) {
     var notImplented = new Error("Sorry, contact isn't ready yet :-(")

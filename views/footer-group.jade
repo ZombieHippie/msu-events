@@ -10,15 +10,14 @@ style.
   .footer-navigation .col-md-4.col-sm-6 {  float: none; display: inline-block; }
 .footer-divider
 .login-group
-  if org
-    em=org.email
+  if email
+    em=email
     | &nbsp;
-    strong=org.name
+    strong=disp
     | &nbsp;
-    a.btn.btn-primary(href="/login?logout") Logout
+    a.btn.btn-primary(href="/auth/logout") Logout
   else
-    a.btn.btn-info(href="/register") Register
-    a.btn.btn-primary(href="/login") Login
+    a.btn.btn-primary(href="/auth/login") Login
 .container.footer-navigation
   .row.text-center
     .col-md-4.col-sm-6.text-center
@@ -27,15 +26,13 @@ style.
       br
       a(href="/") Browse Events
       br
-      if org
-        a(href="/login?logout") Organization Log out
+      if email
+        a(href="/auth/logout") Organization Log out
         br
-        a(href="/org/" + org.slug + "/settings") Organization Settings
+        a(href="/organization/settings") Organization Settings
         br
       else
-        a(href="/login") Organization Log in
-        br
-        a(href="/register") Organization Registration
+        a(href="/auth/login") Organization Log in
     .col-md-4.col-sm-6.text-center
       br
       strong Tutorials

@@ -1,0 +1,42 @@
+extends layout
+
+//- Organization needs to be logged in
+block content
+  .page-header.text-center
+    .page-title
+      h1=disp
+  .row
+    .col-sm-8
+      style.
+        tbody tr td, thead tr td { padding: 1em; }
+        .action#add-calendar { background: #e9f7e7; cursor: pointer }
+        td.action { width: 1em }
+      h2 Calendars
+      form(method="post")
+        table(style="width:100%")
+          thead
+            tr
+              td.action
+              td Name
+              td.action
+          tbody
+            for calendar in calendars
+              tr
+                td(style="background-color:" + calendar.backgroundColor)
+                td=calendar.summary
+                td.action
+                  input(type="checkbox" name=calendar.id checked=calendar.checked)
+        br
+        input.pull-right.btn.btn-default(type="submit" text="Save")
+    .col-sm-4
+      h2 Actions
+      ul
+        li
+          a(href="?refresh") Refresh Events
+block footer
+  script(src="/vendors/jquery-2.1.1/jquery-2.1.1.min.js")
+  script(src="/vendors/bootstrap-3.1.1/bootstrap.min.js")  
+  script.
+    $("#add-calendar").click(function () {
+      $("#add-calendar-modal").modal('show')
+    })
