@@ -28,9 +28,11 @@ app.use(require('./lib/coffee-middleware')({
 
 /// Preliminary locals for jade
 app.use(function (req, res, next) {
-    if (req.session.email != null)
+    if (req.session.email != null) {
         res.locals.email = req.session.email
         res.locals.disp = req.session.disp
+        res.locals.slug = req.session.slug
+    }
     next()
 })
 

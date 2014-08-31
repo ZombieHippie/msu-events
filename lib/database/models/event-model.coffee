@@ -5,14 +5,21 @@ mongoose = require 'mongoose'
 # Event Schema
 eventSchema = mongoose.Schema {
   type: String, # Fraternity, Sorority, Intermural Sport, Interest Group, Campus
+  calendar: String,
   info: {
     name: String,
     description: String,
     location: String
-  }
+  },
+  start: Date,
+  end: Date,
+  recur: String
 }
 
 statics = {
+  getEvents: (calendarId, callback) ->
+    this.find({ calendarId })
+    .exec callback
 }
 
 methods = {

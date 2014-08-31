@@ -7,12 +7,8 @@ userSchema = mongoose.Schema {
   type:   String, # Fraternity, Sorority, Intermural Sport, Interest Group, Campus
   email:  { type: String, lowercase: true, trim: true },
   slug:   { type: String, lowercase: true, trim: true },
-  info:   {
-    name: String, # Eg. Chi Alpha
-    description: String,
-    website: String,
-    location: String
-  },
+  name: String, # Eg. Chi Alpha
+  description: String,
   calendars:  [String],
   tokens:     Object,
   verified:   Boolean
@@ -26,7 +22,7 @@ statics = {
 
     userQuery = this.findOne { 'email': email }
 
-    userQuery.select('info.* verified type email calendars tokens')
+    userQuery.select('description name slug verified type email calendars tokens')
 
     userQuery.exec callback
 
@@ -37,7 +33,7 @@ statics = {
 
     userQuery = this.findOne { 'slug': slug }
 
-    userQuery.select('info.* verified type email calendars')
+    userQuery.select('description name verified type email calendars')
 
     userQuery.exec callback
 

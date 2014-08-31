@@ -7,8 +7,8 @@ saveTokens = (error, email, tokens) ->
   if error?
     console.log error
   else
-    console.log("\n")
-    console.log "saveTokens", email, Object.keys(tokens)
+    # console.log("\n")
+    # console.log "saveTokens", email, Object.keys(tokens)
 
     User.getUser email, (error, user) ->
       if error?
@@ -23,7 +23,7 @@ saveTokens = (error, email, tokens) ->
           email
         }
       user.save (err, user) ->
-        console.log err, user
+        # console.log err, user
 
 router.get '/~google-oauth2', googleHook.handleOAuth2(saveTokens)
 
@@ -33,9 +33,10 @@ router.get '/set-session', (req, res) ->
   email = req.session.email
   if email?
     User.findOne({ email })
-    .select 'info.name'
+    .select 'name slug'
     .exec (error, user) ->
-      req.session.disp = user.info.name
+      req.session.disp = user.name
+      req.session.slug = user.slug
       res.redirect '/'
   else
     res.redirect '/'
