@@ -1,17 +1,13 @@
 
 mongoose = require 'mongoose'
-{ hash } = require '../passhash.coffee'
 
 # User Schema
 userSchema = mongoose.Schema {
-  type:   String, # Fraternity, Sorority, Intermural Sport, Interest Group, Campus
-  email:  { type: String, lowercase: true, trim: true },
-  slug:   { type: String, lowercase: true, trim: true },
-  name: String, # Eg. Chi Alpha
-  description: String,
+  email:    { type: String, lowercase: true, trim: true },
+  name:     String,
+  picture:  String,
   calendars:  [String],
-  tokens:     Object,
-  verified:   Boolean
+  tokens:     Object
 }
 
 statics = {
@@ -22,18 +18,7 @@ statics = {
 
     userQuery = this.findOne { 'email': email }
 
-    userQuery.select('description name slug verified type email calendars tokens')
-
-    userQuery.exec callback
-
-  # May not find user if user does not have a slug yet
-  # callback(Error, User)
-  getUserBySlug: (slug, callback) ->
-    slug = slug.toLowerCase()
-
-    userQuery = this.findOne { 'slug': slug }
-
-    userQuery.select('description name verified type email calendars')
+    userQuery.select('picture name email calendars tokens')
 
     userQuery.exec callback
 

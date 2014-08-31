@@ -33,10 +33,10 @@ router.get '/set-session', (req, res) ->
   email = req.session.email
   if email?
     User.findOne({ email })
-    .select 'name slug'
+    .select 'picture name'
     .exec (error, user) ->
-      req.session.disp = user.name
-      req.session.slug = user.slug
+      req.session.userName = user.name
+      req.session.picture = user.picture
       res.redirect '/'
   else
     res.redirect '/'

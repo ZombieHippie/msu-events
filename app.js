@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var session = require('express-session')
 
+var production = false
+
 var testRoute = require('./routes/test.js')
 
 var app = express()
@@ -28,11 +30,15 @@ app.use(require('./lib/coffee-middleware')({
 
 /// Preliminary locals for jade
 app.use(function (req, res, next) {
+    // Production mode hides login buttons at this time
+    res.locals.production = production
+
+    // User information display
     if (req.session.email != null) {
         res.locals.email = req.session.email
-        res.locals.disp = req.session.disp
-        res.locals.slug = req.session.slug
+        res.locals.picture = req.session.picture
     }
+
     next()
 })
 

@@ -6,7 +6,7 @@ block content
     .page-title
       h1=disp
   .row
-    .col-sm-8
+    .col-xs-12
       style.
         tbody tr td, thead tr td { padding: 1em; }
         .action#add-calendar { background: #e9f7e7; cursor: pointer }
@@ -23,44 +23,14 @@ block content
             for calendar in calendars
               tr
                 td(style="background-color:" + calendar.backgroundColor)
-                td=calendar.summary
+                td
+                  if calendar.checked
+                    a(href="/organization/settings/" + encodeURIComponent(calendar.id))=calendar.summary
+                  else
+                    span=calendar.summary
                 td.action
                   input(type="checkbox" name=calendar.id checked=calendar.checked)
         br
         input.pull-right.btn.btn-default(type="submit" name="submit" value="Update Calendars")
-    .col-sm-4
-      h2 Basic Info
-      br
-      form(method="post")
-        div
-          label(for="name") Organization Name
-          br
-          input.form-control(type="text" value=userName placeholder="name" name="name" onkeyup="document.getElementById('slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-')")
-        div
-          label(for="slug") URL handle
-          br
-          input.form-control#slug(type="text" value=userSlug placeholder="slug" name="slug" disabled=true title="The url friendly way to access your organization")
-        div
-          label(for="type") Organization Type
-          br
-          select.form-control(type="text" name="type" title="Type of this organization")
-            each key in Object.keys(types)
-              option(value=key selected=(selectedType===key))=types[key]
-        div
-          label(for="description") Description
-          br
-          textarea.form-control(type="text" rows="5" placeholder="description" name="description")=userDescription
-        div
-          label(for="email") Owner Account
-          br
-          input.form-control(type="text" name="email" disabled=true value=email)
-        br
-        input.pull-right.btn.btn-default(type="submit" name="submit" value="Update Information")
 
-block footer
-  script(src="/vendors/jquery-2.1.1/jquery-2.1.1.min.js")
-  script(src="/vendors/bootstrap-3.1.1/bootstrap.min.js")  
-  script.
-    $("#add-calendar").click(function () {
-      $("#add-calendar-modal").modal('show')
-    })
+//-block footer

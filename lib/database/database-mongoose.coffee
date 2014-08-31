@@ -1,7 +1,6 @@
 
-{ hash } = require './passhash.coffee'
-
 mongoose = require 'mongoose'
+
 mongoose.connect('mongodb://localhost/msu-events')
 db = mongoose.connection
 `
@@ -13,3 +12,4 @@ db.once('open', function callback () {
 
 exports.User = require './models/user-model.coffee'
 exports.Event = require './models/event-model.coffee'
+exports.Calendar = require './models/calendar-model.coffee'

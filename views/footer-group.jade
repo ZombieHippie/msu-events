@@ -17,7 +17,8 @@ style.
     | &nbsp;
     a.btn.btn-primary(href="/auth/logout") Logout
   else
-    a.btn.btn-primary(href="/auth/login") Login
+    if !production
+      a.btn.btn-primary(href="/auth/login") Login
 .container.footer-navigation
   .row.text-center
     .col-md-4.col-sm-6.text-center
@@ -33,7 +34,7 @@ style.
         br
         a(href="/organization/refresh") Refresh Calendar Events
         br
-      else
+      else if !production
         a(href="/auth/login") Organization Log in
     .col-md-4.col-sm-6.text-center
       br

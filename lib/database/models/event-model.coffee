@@ -1,7 +1,5 @@
 mongoose = require 'mongoose'
 
-{ hash } = require '../passhash.coffee'
-
 # Event Schema
 eventSchema = mongoose.Schema {
   type: String, # Fraternity, Sorority, Intermural Sport, Interest Group, Campus
