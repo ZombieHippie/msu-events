@@ -1,6 +1,7 @@
 express = require('express')
 router = express.Router()
 async = require 'async'
+eventManager = require '../lib/database/event-manager'
 { User, Calendar, Event } = require '../lib/database/database-mongoose'
 googleHook = require('../lib/database/google-calendar')
 
@@ -31,25 +32,26 @@ router.get '/refresh', (req, res) ->
         # Get auth for querying events
         auth = googleHook.getAuth user.tokens.access_token
         
-        async.each(user.calendars, ((calendarId, nextCalendar) ->
-            # Get event list
-            listOptions = {
-              auth,
-              calendarId,
-              fields: "description,items(description,end,htmlLink,iCalUID,id,location,recurrence,recurringEventId,start,status,summary,visibility),nextPageToken,nextSyncToken,summary,timeZone"
-            }
-            googleHook.getCalendar().events.list listOptions, (error, eventsList) ->
-                if error?
-                  nextCalendar(error)
-                else
-                  # # # # # # # # #
-                  # TODO Indexing #
-                  # # # # # # # # #
-                  console.log "eventsList", eventsList
-                  nextCalendar()
-          ), (error) ->
+        async.each(
+          user.calendars
+          , (calendarId, nextCalendar) ->
+            eventManager.indexEvents auth, calendarId, (error, total) ->
+              if error?
+                nextCalendar error
+
+              else
+                res.write """
+                Updated calendar: #{calendarId}
+                  #{total.updated} events modified
+                  #{total.removed} events removed
+                  #{total.cancelled} events cancelled
+                  #{total.created} events created\n
+                """
+                nextCalendar()
+
+          , (error) ->
             if error?
-              res.redirect '/?error=' + error.message
+              res.end("Error: #{error.message}\n\n#{error.stack}")
             else
               res.end("Updated Events")
         )
@@ -60,7 +62,7 @@ router.post '/settings', (req, res) ->
   email = req.session.email
   if email?
     calendars = []
-    for calId, val of req.body when !!val
+    for calId, val of req.body when !!val and calId isnt "submit"
       calendars.push calId
     User.getUser email, (error, user) ->
       if error?

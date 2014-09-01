@@ -11,7 +11,7 @@ calendarSchema = mongoose.Schema {
   description: String,
   color:    String,
   nextSyncToken: String,
-  suspended: Boolean # Not displayed but still indexed
+  suspended: Boolean # Not displayed but still indexed TODO
 }
 
 statics = {

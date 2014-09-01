@@ -12,4 +12,5 @@ db.once('open', function callback () {
 
 exports.User = require './models/user-model.coffee'
 exports.Event = require './models/event-model.coffee'
+exports.EventMetadata = require './models/event-metadata-model.coffee'
 exports.Calendar = require './models/calendar-model.coffee'

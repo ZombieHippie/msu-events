@@ -2,16 +2,9 @@ mongoose = require 'mongoose'
 
 # Event Schema
 eventSchema = mongoose.Schema {
-  type: String, # Fraternity, Sorority, Intermural Sport, Interest Group, Campus
-  calendar: String,
-  info: {
-    name: String,
-    description: String,
-    location: String
-  },
-  start: Date,
-  end: Date,
-  recur: String
+  e: { type: mongoose.Schema.Types.ObjectId, ref: 'EventMetadata' },
+  t: String, # Type: [F]raternity, [S]orority, S[P]ort, [I]nterest Group, [C]ampus Organization, [R]eligion
+  s: Date    # Start
 }
 
 statics = {
