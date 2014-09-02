@@ -1,6 +1,6 @@
 mongoose = require 'mongoose'
 
-# Event Schema
+# Event Metadata Schema
 eventMetaSchema = mongoose.Schema {
   cId: String,  # CalendarId
   eId: String,  # EventId for syncing

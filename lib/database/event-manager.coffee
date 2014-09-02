@@ -1,29 +1,64 @@
 
 async = require 'async'
 googleHook = require './google-calendar'
-{ Calendar, EventMetadata, Event } = require './database-mongoose'
+{ RRule } = require 'rrule'
+{ Calendar, EventMetadata, EventPartial } = require './database-mongoose'
 
 ISO = (str) ->
   new Date(Date.parse(str))
 
-updateEventAndReccurring = (evM, gevent, callback) ->
-  # Make changes
+updateEventAndReccurring = (evM, gevent, t, callback) ->
+  # Make changes if changed
+  evM.s = ISO(gevent.start.dateTime)  if gevent.start?.dateTime?
+  evM.e = ISO(gevent.end.dateTime)    if gevent.end?.dateTime?
+
   evM.hL = gevent.htmlLink      if gevent.htmlLink?
   evM.iC = gevent.iCalUID       if gevent.iCalUID?
   
   evM.i.name = gevent.summary       if gevent.summary?
   evM.i.loc  = gevent.location      if gevent.location?
   evM.i.desc = gevent.description   if gevent.description?
-  
-  evM.s = ISO(gevent.start.dateTime)  if gevent.start?.dateTime?
-  evM.e = ISO(gevent.end.dateTime)    if gevent.end?.dateTime?
 
-  evM.r = gevent.recurrence[0]        if gevent.recurrence?.length
+  evM.r = gevent.recurrence[0].replace(/^RRULE:/, "")        if gevent.recurrence?.length
   evM.reId = gevent.recurringEventId  if gevent.recurringEventId?
 
-  # TODO Event Pointers
+  evM.save (error, evM) ->
+    if error?
+      callback error
+    else
+      pointers = []
 
-  evM.save callback
+      e = evM._id
+
+      if evM.r
+        # Duplicate start time and add 2 years
+        endR = new Date(evM.s)
+        endR.setYear(endR.getYear() + 1902)
+
+        points = RRule.fromString(evM.r).between(evM.s, endR)
+
+      # TODO handle instance duplicates by recording recurring events cancellors
+
+      else
+        points = [evM.s]
+
+      async.each(
+        points
+        , (point, nextPoint) ->
+          if point?
+            new EventPartial {
+                e, # Event ObjectId
+                t, # Type
+                s: point.getTime()  # Start Date
+              }
+            .save nextPoint
+
+          else
+            nextPoint()
+        , callback
+      )
+
+# TODO Check cancelled events and remove duplicates
 
 exports.indexEvents = (auth, calendarId, callback) ->
   Calendar.getCalendar calendarId, (error, calendar) ->
@@ -44,6 +79,8 @@ exports.indexEvents = (auth, calendarId, callback) ->
 
       nextSyncToken = calendar.nextSyncToken
 
+      calendarType = calendar.type
+
       total = {
         updated: 0,
         created: 0,
@@ -54,10 +91,12 @@ exports.indexEvents = (auth, calendarId, callback) ->
       processEvents = (nextPage) ->
         listOptions = {
           calendarId,
-          syncToken: nextSyncToken,
           fields,
           auth
         }
+
+        if nextSyncToken?
+          listOptions.syncToken = nextSyncToken
 
         if nextPageToken?
           listOptions.nextPageToken = nextPageToken
@@ -94,6 +133,7 @@ exports.indexEvents = (auth, calendarId, callback) ->
                 EventMetadata.findOne { eId }
                 .exec (error, evM) ->
                   if error?
+                    console.log "nextGevent"
                     nextGevent error
                   else
                     if gevent.status isnt "cancelled"
@@ -109,7 +149,7 @@ exports.indexEvents = (auth, calendarId, callback) ->
                       else
                         total.updated++
 
-                      updateEventAndReccurring evM, gevent, nextGevent
+                      updateEventAndReccurring evM, gevent, calendarType, nextGevent
 
                     else
                       # gevent is cancelled
@@ -123,6 +163,10 @@ exports.indexEvents = (auth, calendarId, callback) ->
                         
                         total.cancelled++
 
+                        ###
+
+                        # TODO handle cancelling
+
                         # Create New eventMetadata
                         evM = new EventMetadata {
                           cId:  calendarId,  # CalendarId
@@ -132,7 +176,10 @@ exports.indexEvents = (auth, calendarId, callback) ->
                           s:   gevent.originalStartTime.dateTime,
                         }
 
-                        evM.save nextGevent()
+                        evM.save nextGevent
+                        ###
+                        
+                        nextGevent()
 
               , (error) ->
                 if error?
@@ -158,6 +205,5 @@ exports.indexEvents = (auth, calendarId, callback) ->
             callback error
           else
             callback null, total
-      )      
-
+      )
 

@@ -37,6 +37,7 @@ router.get '/refresh', (req, res) ->
           , (calendarId, nextCalendar) ->
             eventManager.indexEvents auth, calendarId, (error, total) ->
               if error?
+                console.error error
                 nextCalendar error
 
               else
