@@ -37,7 +37,10 @@ updateEvent = (evM, gevent, t, callback) ->
 
   evM.save callback
 
-
+exports.reindexEvents = (calendarIds, callback) ->
+  reindexRecurring calendarIds, (error, index) ->
+    console.log index
+    callback error
 
 exports.indexEvents = (auth, calendarId, callback) ->
   Calendar.getCalendar calendarId, (error, calendar) ->
@@ -51,7 +54,7 @@ exports.indexEvents = (auth, calendarId, callback) ->
     else
       gcalendar = googleHook.getCalendar()
 
-      fields = "items(description,end,htmlLink,iCalUID,id,recurrence,location,recurringEventId,start,status,summary,visibility),nextPageToken,nextSyncToken,updated"
+      fields = "items(description,end,htmlLink,iCalUID,originalStartTime,id,recurrence,location,recurringEventId,start,status,summary,visibility),nextPageToken,nextSyncToken,updated"
       
       # This nextPageToken is set if there is another page
       nextPageToken = null
@@ -112,7 +115,7 @@ exports.indexEvents = (auth, calendarId, callback) ->
                 EventMetadata.findOne { eId }
                 .exec (error, evM) ->
                   if error?
-                    console.log "nextGevent"
+                    console.log "nextGevent Error"
                     nextGevent error
                   else
                     if gevent.status isnt "cancelled"
@@ -137,28 +140,29 @@ exports.indexEvents = (auth, calendarId, callback) ->
                         evM.remove nextGevent
 
                       else
-                        # gevent is cancelled and not created yet
-                        # Possibly an instance of recurring event instance cancellation
-                        
-                        total.cancelled++
 
-                        ###
+                        if not (gevent.originalStartTime?.dateTime? and gevent.recurringEventId?)
+                          # I don't quite understand what the point of an event cancellation without these attributes would do...
+                          return nextGevent()
 
-                        # TODO handle cancelling
+                        else
 
-                        # Create New eventMetadata
-                        evM = new EventMetadata {
-                          cId:  calendarId,  # CalendarId
-                          eId,  # EventId for syncing
-                          c: true, # Cancelling event 
-                          reId: gevent.recurringEventId,
-                          s:   gevent.originalStartTime.dateTime,
-                        }
+                          # gevent is cancelled and not created yet
+                          # Possibly an instance of recurring event instance cancellation
 
-                        evM.save nextGevent
-                        ###
-                        
-                        nextGevent()
+                          total.cancelled++
+
+
+                          # Create New eventMetadata
+                          evM = new EventMetadata {
+                            cId:  calendarId,  # CalendarId
+                            eId,  # EventId for syncing
+                            c: true, # Cancelling event 
+                            reId: gevent.recurringEventId,
+                            s:   gevent.originalStartTime.dateTime
+                          }
+
+                          evM.save nextGevent
 
               , (error) ->
                 if error?
@@ -184,6 +188,8 @@ exports.indexEvents = (auth, calendarId, callback) ->
             callback error
           else
             reindexRecurring [calendarId], (error, index) ->
+              console.log "INDEX!\n", index
+              # hold index
               callback error, total
       )
 

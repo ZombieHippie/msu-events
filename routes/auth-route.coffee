@@ -35,6 +35,8 @@ router.get '/set-session', (req, res) ->
     User.findOne({ email })
     .select 'picture name'
     .exec (error, user) ->
+      if error?
+        console.log "errror", error
       req.session.userName = user.name
       req.session.picture = user.picture
       res.redirect '/'
