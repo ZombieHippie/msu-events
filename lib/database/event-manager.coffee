@@ -3,11 +3,22 @@ async = require 'async'
 googleHook = require './google-calendar'
 { RRule } = require 'rrule'
 { Calendar, EventMetadata, EventPartial } = require './database-mongoose'
+{ reindexRecurring } = require './event-index'
+
+
+# Super temporary lookup
+partials = []
+partialsBetween = (t1, t2) ->
+  (a) ->
+    a.s > t1 and a.s < t2
+partialsByTypes = (types) ->
+  (a) ->
+    -1 != types.indexOf(a.t)
 
 ISO = (str) ->
   new Date(Date.parse(str))
 
-updateEventAndReccurring = (evM, gevent, t, callback) ->
+updateEvent = (evM, gevent, t, callback) ->
   # Make changes if changed
   evM.s = ISO(gevent.start.dateTime)  if gevent.start?.dateTime?
   evM.e = ISO(gevent.end.dateTime)    if gevent.end?.dateTime?
@@ -19,46 +30,14 @@ updateEventAndReccurring = (evM, gevent, t, callback) ->
   evM.i.loc  = gevent.location      if gevent.location?
   evM.i.desc = gevent.description   if gevent.description?
 
+  evM.t = t
+
   evM.r = gevent.recurrence[0].replace(/^RRULE:/, "")        if gevent.recurrence?.length
   evM.reId = gevent.recurringEventId  if gevent.recurringEventId?
 
-  evM.save (error, evM) ->
-    if error?
-      callback error
-    else
-      pointers = []
+  evM.save callback
 
-      e = evM._id
 
-      if evM.r
-        # Duplicate start time and add 2 years
-        endR = new Date(evM.s)
-        endR.setYear(endR.getYear() + 1902)
-
-        points = RRule.fromString(evM.r).between(evM.s, endR)
-
-      # TODO handle instance duplicates by recording recurring events cancellors
-
-      else
-        points = [evM.s]
-
-      async.each(
-        points
-        , (point, nextPoint) ->
-          if point?
-            new EventPartial {
-                e, # Event ObjectId
-                t, # Type
-                s: point.getTime()  # Start Date
-              }
-            .save nextPoint
-
-          else
-            nextPoint()
-        , callback
-      )
-
-# TODO Check cancelled events and remove duplicates
 
 exports.indexEvents = (auth, calendarId, callback) ->
   Calendar.getCalendar calendarId, (error, calendar) ->
@@ -149,7 +128,7 @@ exports.indexEvents = (auth, calendarId, callback) ->
                       else
                         total.updated++
 
-                      updateEventAndReccurring evM, gevent, calendarType, nextGevent
+                      updateEvent evM, gevent, calendarType, nextGevent
 
                     else
                       # gevent is cancelled
@@ -198,12 +177,13 @@ exports.indexEvents = (auth, calendarId, callback) ->
             ) # async end
 
       async.doWhilst(
-        processEvents
-        , (-> !!nextPageToken)
-        , (error) ->
+        processEvents           # do
+        , (-> !!nextPageToken)  # while
+        , (error) ->            # then
           if error
             callback error
           else
-            callback null, total
+            reindexRecurring [calendarId], (error, index) ->
+              callback error, total
       )
 

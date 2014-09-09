@@ -4,6 +4,7 @@ mongoose = require 'mongoose'
 eventMetaSchema = mongoose.Schema {
   cId: String,  # CalendarId
   eId: String,  # EventId for syncing
+  t: String,    # Calendar type
   hL: String,   # htmlLink
   iC: String,   # iCalendar Link
   i: {
