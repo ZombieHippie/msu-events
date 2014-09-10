@@ -20,6 +20,47 @@ types = {
 router.get '/', (req, res) ->
   res.redirect('/')
 
+# Debug purp
+router.get '/reindex-2', (req, res) ->
+  Calendar.getIndexedCalendars (error, cIds) ->
+    if error?
+      res.end("Error: #{error.message}\n\n#{error.stack}")
+    
+    else
+      eventManager.reindexEvents cIds, (error, index) ->
+        if error?
+          res.end("Error: #{error.message}\n\n#{error.stack}")
+        else
+          res.set 'Content-Type', 'application/json'
+
+          res.write JSON.stringify(index, null, 2)
+
+          res.end()
+
+router.get '/reindex', (req, res) ->
+  email = req.session.email
+  if email?
+    # Get token for email
+    User.getUser email, (error, user) ->
+      if error?
+        res.redirect '/?error=' + error.message
+      else
+        # # Get auth for querying events
+        # auth = googleHook.getAuth user.tokens.access_token
+
+        eventManager.reindexEvents user.calendars, (error, index) ->
+          if error?
+            res.end("Error: #{error.message}\n\n#{error.stack}")
+          else
+            res.set 'Content-Type', 'application/json'
+
+            res.write JSON.stringify(index, null, 2)
+
+            res.end()
+
+  else
+    res.redirect '/'
+
 
 router.get '/refresh', (req, res) ->
   email = req.session.email
@@ -122,19 +163,27 @@ router.post '/settings/:calendarId', (req, res) ->
       else if !(~user.calendars.indexOf(calendarId))
         res.redirect '/?error=' + encodeURIComponent("Insufficient permmissions")
       else
+        # This is used so we can redirect when body elements aren't present which throw errors
+        redirecterr = (error) ->
+          urlPath = '/organization/settings/' + encodeURIComponent(calendarId)
+          res.redirect urlPath + (if error then '?error=' + error.message else '?saved')
+
         saveCalendar = (error, calendar) ->
           if error?
             res.redirect '/?error=' + error.message
           else
-            calendar.name = req.body.name
-            calendar.description = req.body.description
-            calendar.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-            calendar.type = if types[req.body.type]? then req.body.type else "O"
-            calendar.color = req.body.color
+            try
+              calendar.name = req.body.name
+              calendar.description = req.body.description
+              calendar.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+              calendar.type = if types[req.body.type]? then req.body.type else "O"
+              calendar.color = req.body.color
+              calendar.suspended = req.body.suspended?.test /check|true|yes|on/i
 
-            calendar.save (error) ->
-              urlPath = '/organization/settings/' + encodeURIComponent(calendarId)
-              res.redirect urlPath + (if error then '?error=' + error.message else '?saved')
+              calendar.save redirecterr
+              
+            catch e
+              redirecterr error
         
         Calendar.getCalendar calendarId, (error, calendar) ->
           if error?

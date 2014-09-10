@@ -18,6 +18,14 @@ statics = {
   getCalendar: (calendarId, callback) ->
     this.findOne({ calendarId })
     .exec callback
+  getIndexedCalendars: (callback) ->
+    this.find({ suspended: false }, 'calendarId')
+    .exec (error, calColl) ->
+      if error?
+        callback error
+
+      else
+        callback null, calColl.forEach((E)->E.calendarId)
 }
 
 methods = {

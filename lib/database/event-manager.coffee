@@ -40,7 +40,7 @@ updateEvent = (evM, gevent, t, callback) ->
 exports.reindexEvents = (calendarIds, callback) ->
   reindexRecurring calendarIds, (error, index) ->
     console.log index
-    callback error
+    callback error, index
 
 exports.indexEvents = (auth, calendarId, callback) ->
   Calendar.getCalendar calendarId, (error, calendar) ->

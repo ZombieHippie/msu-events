@@ -83,11 +83,6 @@ reindexRecurring = (calendarIds, callback) ->
       indexCids calendarIds, callback
 
     else
-      Calendar.getIndexedIds (error, cIds) ->
-        if error?
-          callback error
-
-        else
-          indexCids(cIds, callback)
+      callback new Error "need calendarIds"
 
 exports.reindexRecurring = reindexRecurring

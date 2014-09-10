@@ -37,6 +37,7 @@ app.use(function (req, res, next) {
     if (req.session.email != null) {
         res.locals.email = req.session.email
         res.locals.picture = req.session.picture
+        res.locals.calendars = req.session.calendars
     }
 
     next()

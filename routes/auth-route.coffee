@@ -39,6 +39,8 @@ router.get '/set-session', (req, res) ->
         console.log "errror", error
       req.session.userName = user.name
       req.session.picture = user.picture
+      req.session.calendarIds = user.calendars
+      console.log "cale", user.calendars
       res.redirect '/'
   else
     res.redirect '/'
