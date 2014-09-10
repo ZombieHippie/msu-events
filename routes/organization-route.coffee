@@ -161,7 +161,7 @@ router.post '/settings/:calendarId', (req, res) ->
       if error?
         res.redirect '/?error=' + error.message
       else if !(~user.calendars.indexOf(calendarId))
-        res.redirect '/?error=' + encodeURIComponent("Insufficient permmissions")
+        res.redirect '/?error=' + encodeURIComponent("Insufficient permissions")
       else
         # This is used so we can redirect when body elements aren't present which throw errors
         redirecterr = (error) ->
@@ -178,7 +178,7 @@ router.post '/settings/:calendarId', (req, res) ->
               calendar.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
               calendar.type = if types[req.body.type]? then req.body.type else "O"
               calendar.color = req.body.color
-              calendar.suspended = req.body.suspended?.test /check|true|yes|on/i
+              calendar.suspended = (/check|true|yes|on/i).test req.body.suspended
 
               calendar.save redirecterr
               
@@ -262,7 +262,6 @@ router.get '/settings/:calendarId', (req, res) ->
                     color: gcalendar.backgroundColor
                   }
                   renderCalendarSettings null, calendar, isNew
-
 
   else
     res.redirect '/'

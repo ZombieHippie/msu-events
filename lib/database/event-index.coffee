@@ -2,6 +2,16 @@ async = require 'async'
 { RRule } = require 'rrule'
 { Calendar, EventMetadata } = require './database-mongoose'
 
+
+# Super temporary lookup
+partials = []
+partialsBetween = (t1, t2) ->
+  (a) ->
+    a.s > t1 and a.s < t2
+partialsByTypes = (types) ->
+  (a) ->
+    -1 != types.indexOf(a.t)
+
 indexing = false
 tmpIndex = null
 tmpDel = null
@@ -16,10 +26,22 @@ indexEvent = (evM) ->
     endR = new Date(evM.s)
     endR.setYear(endR.getYear() + 1902)
 
-    points = RRule.fromString(evM.r).between(evM.s, endR)
+    # create rule and set first date
+    rruleStr = (
+      evM.r.replace(/DTSTART=[\w\d]+/,"") +
+      ";" +
+      RRule.optionsToString({ dtstart: evM.s }) # Need a dtstart so the time is exact
+    ).replace(/;+/g, ";")
+    rule = RRule.fromString rruleStr
+    
+    points = rule.between(evM.s, endR)
 
   else if evM.reId?
     tmpDel[c].push String(evM.reId) + String(evM.s.getTime())
+
+    if not evM.c
+      # Not cancelled event
+      console.log "Recurring event modified instance", evM
 
   else
     points = [evM.s]
@@ -70,17 +92,26 @@ indexCids = (cIds, callback) ->
       , 100
     )
 
-    callback(null, tmpIndex)
+    callback(null, {index: tmpIndex, tmpDel } )
 
-
-# if calendarIds is null, just process the non-suspended calendars
 reindexRecurring = (calendarIds, callback) ->
   if tmpIndex? or tmpDel?
     callback new Error("Recurring events already being indexed!")
 
   else
     if calendarIds?
-      indexCids calendarIds, callback
+      indexCids calendarIds, (error, indexObj) ->
+        if error?
+          callback error
+
+        else
+          tmppartials = []
+          for key, evMPartial of indexObj.index
+            tmppartials.push evMPartial
+            partials = tmppartials.sort (a, b) ->
+              a.s < b.s
+            tmppartials = null
+          callback(null, indexObj)
 
     else
       callback new Error "need calendarIds"

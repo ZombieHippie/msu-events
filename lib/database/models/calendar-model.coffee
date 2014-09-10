@@ -1,7 +1,7 @@
 
 mongoose = require 'mongoose'
 
-# Event Schema
+# Calendar Schema
 calendarSchema = mongoose.Schema {
   owner:      String, # Email
   calendarId: String,
@@ -25,7 +25,7 @@ statics = {
         callback error
 
       else
-        callback null, calColl.forEach((E)->E.calendarId)
+        callback null, calColl.map((E)->E.calendarId)
 }
 
 methods = {
