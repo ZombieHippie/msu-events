@@ -14,15 +14,16 @@ block content
       table(style="width:100%")
         thead
           tr
-            td.action
             td Name
             td.action
+            td.action
         tbody
-          for evt in events
+          each evt in events
             tr
-              td(style="background-color:" + evt.backgroundColor)=(new Date(evt.s)).toLocaleString()
               td
                 a(href="/event/" + encodeURIComponent(evt.eId))=evt.i.name
+              td(style="background-color:" + evt.backgroundColor)=(new Date(evt.s)).toLocaleString()
               td.action
             tr
-              td=evt.i.desc
+              td
+                small=evt.i.desc

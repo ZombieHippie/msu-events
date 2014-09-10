@@ -92,8 +92,9 @@ indexCids = (cIds, callback) ->
     callback(null, {index: tmpIndex, tmpDel } )
 
 getTSE = (t, s, e) ->
-  if s and e and s.getTime?
+  if s and s.getTime?
     s = s.getTime()
+  if e and e.getTime?
     e = e.getTime()
   res = partials.slice(0)
   res = res.filter(partialsBetween(s, e)) if s and e
@@ -106,12 +107,13 @@ _s = (o, t) ->
 
 exports.getEventsTSE = (t, s, e, callback) ->
   evPs = getTSE t, s, e
+  console.log "evPs", evPs
   evMsTmp = {}
   async.map(
     evPs
     , (evP, nextEvP) ->
       if evMsTmp[evP.e]?
-        nextEvP(null, _s(evMsTmp[eId], evP.s))
+        nextEvP(null, _s(evMsTmp[evP.e], evP.s))
 
       else
         EventMetadata.findOne({ eId: evP.e })
@@ -120,7 +122,10 @@ exports.getEventsTSE = (t, s, e, callback) ->
             nextEvP error
 
           else
-            nextEvP null, _s(doc?.toJSON?(), evP.s)
+            newEvP = _s(doc?.toJSON?(), evP.s)
+            evMsTmp[evP.e] = newEvP
+
+            nextEvP null, newEvP
 
     , callback
   )
@@ -142,7 +147,7 @@ reindexRecurring = (calendarIds, callback) ->
               tmppartials.push evMPartial
 
           partials = tmppartials.sort (a, b) ->
-            a.s > b.s
+            a.s - b.s
 
           tmppartials = null
 
