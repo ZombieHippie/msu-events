@@ -75,9 +75,6 @@ indexCids = (cIds, callback) ->
     callback error
   
   .on 'close', ->
-    console.log tmpDel, tmpIndex
-
-
     # Delete recurring events
     for cId, dels in tmpDel
       for del in dels
@@ -94,6 +91,40 @@ indexCids = (cIds, callback) ->
 
     callback(null, {index: tmpIndex, tmpDel } )
 
+getTSE = (t, s, e) ->
+  if s and e and s.getTime?
+    s = s.getTime()
+    e = e.getTime()
+  res = partials.slice(0)
+  res = res.filter(partialsBetween(s, e)) if s and e
+  res = res.filter(partialsByTypes(t)) if t
+  return res
+
+_s = (o, t) ->
+  o.s = t if typeof o is "object"
+  return o
+
+exports.getEventsTSE = (t, s, e, callback) ->
+  evPs = getTSE t, s, e
+  evMsTmp = {}
+  async.map(
+    evPs
+    , (evP, nextEvP) ->
+      if evMsTmp[evP.e]?
+        nextEvP(null, _s(evMsTmp[eId], evP.s))
+
+      else
+        EventMetadata.findOne({ eId: evP.e })
+        .exec (error, doc) ->
+          if error?
+            nextEvP error
+
+          else
+            nextEvP null, _s(doc?.toJSON?(), evP.s)
+
+    , callback
+  )
+
 reindexRecurring = (calendarIds, callback) ->
   if tmpIndex? or tmpDel?
     callback new Error("Recurring events already being indexed!")
@@ -106,11 +137,15 @@ reindexRecurring = (calendarIds, callback) ->
 
         else
           tmppartials = []
-          for key, evMPartial of indexObj.index
-            tmppartials.push evMPartial
-            partials = tmppartials.sort (a, b) ->
-              a.s < b.s
-            tmppartials = null
+          for cId, calObj of indexObj.index
+            for eId, evMPartial of calObj
+              tmppartials.push evMPartial
+
+          partials = tmppartials.sort (a, b) ->
+            a.s > b.s
+
+          tmppartials = null
+
           callback(null, indexObj)
 
     else

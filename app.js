@@ -7,8 +7,6 @@ var session = require('express-session')
 
 var production = false
 
-var testRoute = require('./routes/test.js')
-
 var app = express()
 
 // view engine setup
@@ -73,11 +71,21 @@ aboutPages = [
 app.use('/about', markedMw('about', aboutPages))
 
 /// Routes
-app.use('/test', testRoute)
+app.use('/', require('./routes/event-route.coffee'))
+app.use('/test', require('./routes/test.js'))
 app.use('/auth', require('./routes/auth-route.coffee'))
 app.use('/organization', require('./routes/organization-route.coffee'))
-// app.use('/test-calendars', require('./routes/test-calendars.coffee'))
-// app.use('/test-organizations', require('./routes/test-organizations.coffee'))
+
+// Preliminary indexing
+require('./lib/database/database-mongoose.coffee').Calendar.getIndexedCalendars(function (error, cIds) {
+  if (error) {
+    console.error(error)
+  } else {
+    require('./lib/database/event-index.coffee').reindexRecurring(cIds, function(error){
+      if (error) {console.error(error)};
+    })
+  }
+})
 
 app.use('/contact', function (req, res, next) {
     var notImplented = new Error("Sorry, contact isn't ready yet :-(")
