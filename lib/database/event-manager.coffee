@@ -5,16 +5,6 @@ googleHook = require './google-calendar'
 { Calendar, EventMetadata, EventPartial } = require './database-mongoose'
 { reindexRecurring } = require './event-index'
 
-
-# Super temporary lookup
-partials = []
-partialsBetween = (t1, t2) ->
-  (a) ->
-    a.s > t1 and a.s < t2
-partialsByTypes = (types) ->
-  (a) ->
-    -1 != types.indexOf(a.t)
-
 ISO = (str) ->
   new Date(Date.parse(str))
 
@@ -38,9 +28,8 @@ updateEvent = (evM, gevent, t, callback) ->
   evM.save callback
 
 exports.reindexEvents = (calendarIds, callback) ->
-  reindexRecurring calendarIds, (error, index) ->
-    console.log index
-    callback error
+  reindexRecurring calendarIds, (error, indexObj) ->
+    callback error, indexObj
 
 exports.indexEvents = (auth, calendarId, callback) ->
   Calendar.getCalendar calendarId, (error, calendar) ->
@@ -187,9 +176,7 @@ exports.indexEvents = (auth, calendarId, callback) ->
           if error
             callback error
           else
-            reindexRecurring [calendarId], (error, index) ->
-              console.log "INDEX!\n", index
-              # hold index
+            exports.reindexEvents [calendarId], (error) ->
               callback error, total
       )
 

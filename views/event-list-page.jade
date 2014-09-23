@@ -1,0 +1,29 @@
+extends layout
+
+//- Organization needs to be logged in
+block content
+  .page-header.text-center
+    .page-title
+      h1=disp
+  .row
+    .col-xs-12
+      style.
+        tbody tr td, thead tr td { padding: 1em; }
+        td.action { width: 1em }
+      h2 Events
+      table(style="width:100%")
+        thead
+          tr
+            td Name
+            td.action
+            td.action
+        tbody
+          each evt in events
+            tr
+              td
+                a(href="/event/" + encodeURIComponent(evt.eId))=evt.i.name
+              td(style="background-color:" + evt.backgroundColor)=(new Date(evt.s)).toLocaleString()
+              td.action
+            tr
+              td
+                small=evt.i.desc

@@ -1,7 +1,7 @@
 
 mongoose = require 'mongoose'
 
-# Event Schema
+# Calendar Schema
 calendarSchema = mongoose.Schema {
   owner:      String, # Email
   calendarId: String,
@@ -18,6 +18,14 @@ statics = {
   getCalendar: (calendarId, callback) ->
     this.findOne({ calendarId })
     .exec callback
+  getIndexedCalendars: (callback) ->
+    this.find({ suspended: false }, 'calendarId')
+    .exec (error, calColl) ->
+      if error?
+        callback error
+
+      else
+        callback null, calColl.map((E)->E.calendarId)
 }
 
 methods = {

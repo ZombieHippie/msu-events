@@ -34,6 +34,8 @@ style.
         br
         a(href="/organization/refresh") Refresh Calendar Events
         br
+        a(href="/organization/reindex") Reindex Calendar Events
+        br
       else if !production
         a(href="/auth/login") Organization Log in
     .col-md-4.col-sm-6.text-center
@@ -44,6 +46,10 @@ style.
       br
       a(href="/tutorials/linking-google-calendar-with-your-organization") Link with Google Calendar
     .col-md-4.col-sm-6.text-center
+      if calendarIds 
+        br
+        pre=JSON.stringify(calendarIds, null, 0)
+    //-
       br
       strong Contact
       br
