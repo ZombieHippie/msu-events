@@ -3,6 +3,7 @@ mongoose = require 'mongoose'
 # Event Partial Schema
 eventPartialSchema = mongoose.Schema {
   e: { type: mongoose.Schema.Types.ObjectId, ref: 'EventMetadata' },
+  c: { type: mongoose.Schema.Types.ObjectId, ref: 'Calendar' },
   t: String, # Type: [F]raternity, [S]orority, S[P]ort, [I]nterest Group, [C]ampus Organization, [R]eligion
   s: Number  # Start
 }
