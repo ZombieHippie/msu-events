@@ -1,3 +1,5 @@
+# Here we are indexing any calendarIds of events and sifting through repeating events
+
 async = require 'async'
 { RRule } = require 'rrule'
 { Calendar, EventMetadata } = require './database-mongoose'

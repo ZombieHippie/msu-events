@@ -8,29 +8,53 @@ block content
   .row
     .col-xs-12
       style.
+        .header-group, .page-header {display:none}
         tbody tr td, thead tr td { padding: 1em; }
         .action#add-calendar { background: #e9f7e7; cursor: pointer }
         td.action { width: 1em }
+        tr.info td pre { padding: 0; background: transparent; border: none; }
+        tr.info td { background: whitesmoke; }
       h2 Calendars
-      form(method="post")
-        table(style="width:100%")
-          thead
+      table(style="width:100%")
+        thead
+          tr
+            td.action
+            td Name
+            td.action Toggle Activation
+            td.action Toggle Suspension
+            td.action Reindex Events
+            td
+        tbody
+          for calendar in calendars
+            - var cId = encodeURIComponent(calendar.id)
             tr
-              td.action
-              td Name
-              td.action
-          tbody
-            for calendar in calendars
-              tr
-                td(style="background-color:" + calendar.backgroundColor)
-                td
-                  if calendar.checked
-                    a(href="/organization/settings/" + encodeURIComponent(calendar.id))=calendar.summary
-                  else
-                    span=calendar.summary
-                td.action
-                  input(type="checkbox" name=calendar.id checked=calendar.checked)
-        br
-        input.pull-right.btn.btn-default(type="submit" name="submit" value="Update Calendars")
-
+              td(style="background-color:" + calendar.backgroundColor)
+              td
+                span=calendar.summary
+              td.action(style=(!calendar.checked?"opacity:.5":""))
+                if calendar.checked
+                  a(href="?a=delete&cId=" + cId style="color:green" title="Delete!") Active
+                else
+                  a(href="?a=activate&cId=" + cId style="color:red") Inactive
+              td.action(style=(!calendar.checked?"opacity:.1":""))
+                if calendar.suspended
+                  a(href="?a=unsuspend&cId=" + cId style="color:red") Suspended
+                else
+                  a(href="?a=suspend&cId=" + cId style="color:green") Indexed
+              td.action(style=(!calendar.checked?"opacity:.1":""))
+                a(href="?a=reindex&cId=" + cId) Reindex
+              td
+                if calendar.checked
+                  a(href="/organization/settings/" + cId) More Settings
+            if calendar.checked
+              tr.info
+                td(colspan=3)
+                  pre="Type: " + calendar.mtype + "\nName: " + calendar.mname +  "\nDesc: " + calendar.mdescription
+                td(colspan=3)
+                  pre="Events: \nPartials: \n"
+              tr(style="height:20px")
+      if acted != null
+        div(style="padding:1em; background:whitesmoke; margin-top:2em")
+          strong(style="width:13em; display:inline-block;")=acted.a
+          span=acted.targetCalendar
 //-block footer

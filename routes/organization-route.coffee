@@ -59,22 +59,6 @@ router.get '/refresh', (req, res) ->
   else
     res.redirect '/'
 
-router.post '/settings', (req, res) ->
-  email = req.session.email
-  if email?
-    calendars = []
-    for calId, val of req.body when !!val and calId isnt "submit"
-      calendars.push calId
-    User.getUser email, (error, user) ->
-      if error?
-        res.redirect '/organization/settings/?error=' + error.message
-      else
-        user.calendars = calendars
-        user.save (error) ->
-          res.redirect '/organization/settings' + (if error then '?error=' + error.message else '?saved')
-  else
-    res.redirect '/auth/login'
-
 # Normal organization settings page
 router.get '/settings', (req, res) ->
   email = req.session.email
@@ -97,17 +81,44 @@ router.get '/settings', (req, res) ->
           if error?
             res.redirect '/?error=' + error.message
           else
-            if user.calendars?
-              for item in calendarList.items
-                item.checked = item.id in user.calendars
+            Calendar.find({ owner: user.email })
+            .exec (error, mcalendars)->
+              if error?
+                res.redirect '/?error=' + error.message
+              else
+                calendarIds = {}
+                for c in mcalendars
+                  calendarIds[c.calendarId] = c
+                for item in calendarList.items
+                  c = calendarIds[item.id]
+                  item.checked = c?
+                  if c?
+                    item.suspended = c.suspended
+                    item.mdescription = c.description
+                    item.mname = c.name
+                    item.mtype = c.type
 
-            locals = {
-              title: "Organization Settings",
-              types,
-              calendars: calendarList.items
-            }
+                render = (acted) ->
+                  calendars = calendarList.items.sort (a, b) ->
+                    if a.checked isnt b.checked
+                      return if a.checked then -1 else 1
+                    else if a.suspended isnt b.suspended
+                      return if a.suspended then 1 else -1
+                    else
+                      return if a.summary.localeCompare(b.summary)
+                  locals = {
+                    title: "Organization Settings",
+                    types,
+                    acted,
+                    calendars
+                  }
 
-            res.render "organization-settings-page", locals
+                  res.render "organization-settings-page", locals
+                console.log calendarIds
+                if req.query.a and calendarIds[req.query.cId]?
+                  render { a:req.query.a, targetCalendar: calendarIds[req.query.cId].name }
+                else
+                  render()
   else
     res.redirect '/'
 
