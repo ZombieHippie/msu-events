@@ -2,7 +2,7 @@ express = require('express')
 router = express.Router()
 async = require 'async'
 eventManager = require '../lib/database/event-manager'
-{ User, Calendar, Event } = require '../lib/database/database-mongoose'
+{ User, Calendar, EventMetadata, EventPartial } = require '../lib/database/database-mongoose'
 googleHook = require('../lib/database/google-calendar')
 
 # Organization types
@@ -61,7 +61,7 @@ router.get '/reindex', (req, res) ->
   else
     res.redirect '/'
 
-
+###
 router.get '/refresh', (req, res) ->
   email = req.session.email
   if email?
@@ -99,7 +99,7 @@ router.get '/refresh', (req, res) ->
         )
   else
     res.redirect '/'
-
+###
 # Normal organization settings page
 router.get '/settings', (req, res) ->
   email = req.session.email
@@ -138,26 +138,115 @@ router.get '/settings', (req, res) ->
                     item.mdescription = c.description
                     item.mname = c.name
                     item.mtype = c.type
+                
+                acted = null
 
-                render = (acted) ->
-                  calendars = calendarList.items.sort (a, b) ->
-                    if a.checked isnt b.checked
-                      return if a.checked then -1 else 1
-                    else if a.suspended isnt b.suspended
-                      return if a.suspended then 1 else -1
+                render = (error) ->
+                  if error?
+                    res.redirect "/?error=" + error
+                  else
+                    if acted
+                      res.redirect "/organization/settings"
                     else
-                      return if a.summary.localeCompare(b.summary)
-                  locals = {
-                    title: "Organization Settings",
-                    types,
-                    acted,
-                    calendars
-                  }
+                      calendars = calendarList.items.sort (a, b) ->
+                        if a.checked isnt b.checked
+                          return if a.checked then -1 else 1
+                        else if a.suspended isnt b.suspended
+                          return if a.suspended then 1 else -1
+                        else
+                          return if a.summary.localeCompare(b.summary)
+                      locals = {
+                        title: "Organization Settings",
+                        types,
+                        calendars
+                      }
 
-                  res.render "organization-settings-page", locals
-                console.log calendarIds
-                if req.query.a and calendarIds[req.query.cId]?
-                  render { a:req.query.a, targetCalendar: calendarIds[req.query.cId].name }
+                      res.render "organization-settings-page", locals
+
+                a = req.query.a
+                cId = req.query.cId
+                if a and calendarIds[cId]?
+                  acted = { a, targetCalendar: calendarIds[cId].name }
+
+                  switch a
+                    when "unsuspend"
+                      Calendar.getCalendar cId, (error, cal) ->
+                        if error?
+                          render error
+                        else if cal?
+                          cal.suspended = false
+                          cal.save render
+                        else
+                          render "Calendar-doesnt-exist!"
+                    when "suspend"
+                      Calendar.getCalendar cId, (error, cal) ->
+                        if error?
+                          render error
+                        else if cal?
+                          cal.suspended = true
+                          cal.save (error) ->
+                            if error?
+                              render error
+                            else
+                              EventPartial.remove {c:cal}, render
+                        else
+                          render "Calendar-doesnt-exist!"
+                    when "delete"
+                      user.calendars = user.calendars.filter ((e)->e.calendarId isnt cId)
+                      user.save (error)->
+                        if error? then render error else
+
+                          Calendar.getCalendar cId, (error, cal) ->
+                            if error? then render error else
+
+                            if cal?
+                              EventPartial.remove {c:cal}, (error) ->
+                                if error?
+                                  render error
+
+                                else
+                                  EventMetadata.remove {cId}, (error) ->
+                                    if error?
+                                      render error
+                                    else
+                                      Calendar.remove {calendarId: cId}, render
+                            else
+                              render "Calendar-doesnt-exist!"
+                    when "reindex"
+                      render()
+                    else
+                      render()
+
+                else if a is "activate"
+                  # Add calendar to user's calendars
+                  user.calendars.push cId
+                  user.save (error, user) ->
+                    if error?
+                      render error
+                    else
+                      getOptions = {
+                        auth,
+                        calendarId: cId,
+                        fields: "backgroundColor,description,summary"
+                      }
+
+                      googleHook.getCalendar().calendarList.get getOptions, (error, gcalendar) ->
+                        if error? then render error
+                        else
+                          activatingCal = new Calendar {
+                            calendarId: cId,
+                            owner: email,
+                            name: gcalendar.summary,
+                            slug: gcalendar.summary.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                            type: "O",
+                            description: gcalendar.description,
+                            color: gcalendar.backgroundColor,
+                            suspended: false
+                          }
+
+                          acted = { a, targetCalendar: null }
+
+                          activatingCal.save render
                 else
                   render()
   else
@@ -188,7 +277,6 @@ router.post '/settings/:calendarId', (req, res) ->
               calendar.description = req.body.description
               calendar.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
               calendar.type = if types[req.body.type]? then req.body.type else "O"
-              calendar.color = req.body.color
               calendar.suspended = (/check|true|yes|on/i).test req.body.suspended
 
               calendar.save redirecterr
@@ -205,8 +293,8 @@ router.post '/settings/:calendarId', (req, res) ->
             saveCalendar null, calendar
 
           else
-            calendar = new Calendar({ calendarId, owner: email })
-            saveCalendar null, calendar
+            # Calendar not initiallized properly
+            res.redirect('/organization/settings')
   else
     res.redirect '/auth/login'
 
@@ -220,7 +308,7 @@ router.get '/settings/:calendarId', (req, res) ->
       if error?
         res.redirect '/?error=' + error.message
       else if !(~user.calendars.indexOf(calendarId))
-        res.redirect '/?error=' + encodeURIComponent("Insufficient permmissions")
+        res.redirect '/?error=' + encodeURIComponent("Insufficient permissions")
       else
         renderCalendarSettings = (error, calendar, isNew) ->
           if error?
@@ -247,32 +335,8 @@ router.get '/settings/:calendarId', (req, res) ->
               renderCalendarSettings null, calendar, isNew
 
             else
-              isNew = true
-
-              # Get auth for querying calendars
-              auth = googleHook.getAuth user.tokens.access_token
-              
-              getOptions = {
-                auth,
-                calendarId,
-                fields: "backgroundColor,description,summary"
-              }
-
-              googleHook.getCalendar().calendarList.get getOptions, (error, gcalendar) ->
-                if error?
-                  renderCalendarSettings error
-                else
-                  console.log gcalendar
-                  
-                  calendar = {
-                    owner: email,
-                    name: gcalendar.summary,
-                    slug: gcalendar.summary.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                    type: "O",
-                    description: gcalendar.description,
-                    color: gcalendar.backgroundColor
-                  }
-                  renderCalendarSettings null, calendar, isNew
+              # Calendar not initiallized properly
+              renderCalendarSettings new Error "Calendar not initiallized!"
 
   else
     res.redirect '/'

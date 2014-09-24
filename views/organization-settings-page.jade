@@ -11,18 +11,23 @@ block content
         .header-group, .page-header {display:none}
         tbody tr td, thead tr td { padding: 1em; }
         .action#add-calendar { background: #e9f7e7; cursor: pointer }
-        td.action { width: 1em }
+        td.action { min-width: 1em }
         tr.info td pre { padding: 0; background: transparent; border: none; }
         tr.info td { background: whitesmoke; }
+        .tog .label {display:none}
+        .tog .toga {display:inline}
+        .tog:hover .label {display:inline}
+        .tog:hover .toga {display:none}
+
       h2 Calendars
       table(style="width:100%")
         thead
           tr
             td.action
             td Name
-            td.action Toggle Activation
-            td.action Toggle Suspension
-            td.action Reindex Events
+            td Toggle Activation
+            td Toggle Suspension
+            td Reindex Events
             td
         tbody
           for calendar in calendars
@@ -31,21 +36,29 @@ block content
               td(style="background-color:" + calendar.backgroundColor)
               td
                 span=calendar.summary
-              td.action(style=(!calendar.checked?"opacity:.5":""))
+              td
                 if calendar.checked
-                  a(href="?a=delete&cId=" + cId style="color:green" title="Delete!") Active
-                else
-                  a(href="?a=activate&cId=" + cId style="color:red") Inactive
-              td.action(style=(!calendar.checked?"opacity:.1":""))
-                if calendar.suspended
-                  a(href="?a=unsuspend&cId=" + cId style="color:red") Suspended
-                else
-                  a(href="?a=suspend&cId=" + cId style="color:green") Indexed
-              td.action(style=(!calendar.checked?"opacity:.1":""))
-                a(href="?a=reindex&cId=" + cId) Reindex
+                  a.tog(href="?a=delete&cId=" + cId style="color:red")
+                    span.label.label-success.toga Active
+                    span.label.label-danger Delete
+              td
+                if calendar.checked
+                  if calendar.suspended
+                    a.tog(href="?a=unsuspend&cId=" + cId)
+                      span.label.label-danger.toga Suspended
+                      span.label.label-success Unsuspend
+                  else
+                    a.tog(href="?a=suspend&cId=" + cId)
+                      span.label.label-success.toga Indexed
+                      span.label.label-danger Suspend
+              td
+                if calendar.checked
+                  a(href="?a=reindex&cId=" + cId) Reindex
               td
                 if calendar.checked
                   a(href="/organization/settings/" + cId) More Settings
+                else
+                  a(href="?a=activate&cId=" + cId style="color:grey") Activate
             if calendar.checked
               tr.info
                 td(colspan=3)
