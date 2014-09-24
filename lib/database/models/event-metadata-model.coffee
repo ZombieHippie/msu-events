@@ -3,6 +3,7 @@ mongoose = require 'mongoose'
 # Event Metadata Schema
 eventMetaSchema = mongoose.Schema {
   cId: String,  # CalendarId
+  cal: { type: mongoose.Schema.Types.ObjectId, ref: 'Calendar' },
   eId: String,  # EventId for syncing
   t: String,    # Calendar type
   hL: String,   # htmlLink

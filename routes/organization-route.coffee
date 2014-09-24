@@ -19,7 +19,7 @@ types = {
 
 router.get '/', (req, res) ->
   res.redirect('/')
-
+###
 # Debug purp
 router.get '/reindex-2', (req, res) ->
   Calendar.getIndexedCalendars (error, cIds) ->
@@ -60,7 +60,7 @@ router.get '/reindex', (req, res) ->
 
   else
     res.redirect '/'
-
+###
 ###
 router.get '/refresh', (req, res) ->
   email = req.session.email
@@ -138,11 +138,17 @@ router.get '/settings', (req, res) ->
                     item.mdescription = c.description
                     item.mname = c.name
                     item.mtype = c.type
-                
+                    item.mindexinfo = c.indexInfo
+                    if c.lastIndex?.toLocaleString?
+                      item.mlastindex = c.lastIndex.toLocaleString().replace(/(:\d\d)[^:]+$/, "$1")
+                    else
+                      item.mlastindex = "Unknown"
+
                 acted = null
 
                 render = (error) ->
                   if error?
+                    console.error "RENDERERROR", error
                     res.redirect "/?error=" + error
                   else
                     if acted
@@ -169,15 +175,16 @@ router.get '/settings', (req, res) ->
                   acted = { a, targetCalendar: calendarIds[cId].name }
 
                   switch a
+
                     when "unsuspend"
                       Calendar.getCalendar cId, (error, cal) ->
-                        if error?
-                          render error
-                        else if cal?
+                        if error? then render error else
+                        if cal?
                           cal.suspended = false
                           cal.save render
                         else
                           render "Calendar-doesnt-exist!"
+
                     when "suspend"
                       Calendar.getCalendar cId, (error, cal) ->
                         if error?
@@ -191,6 +198,7 @@ router.get '/settings', (req, res) ->
                               EventPartial.remove {c:cal}, render
                         else
                           render "Calendar-doesnt-exist!"
+
                     when "delete"
                       user.calendars = user.calendars.filter ((e)->e.calendarId isnt cId)
                       user.save (error)->
@@ -212,8 +220,10 @@ router.get '/settings', (req, res) ->
                                       Calendar.remove {calendarId: cId}, render
                             else
                               render "Calendar-doesnt-exist!"
+
                     when "reindex"
-                      render()
+                      eventManager.indexEvents auth, cId, render
+
                     else
                       render()
 

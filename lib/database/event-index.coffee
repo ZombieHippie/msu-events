@@ -2,9 +2,9 @@
 
 async = require 'async'
 { RRule } = require 'rrule'
-{ Calendar, EventMetadata } = require './database-mongoose'
+{ Calendar, EventMetadata, EventPartial } = require './database-mongoose'
 
-
+###
 # Super temporary lookup
 partials = []
 partialsBetween = (t1, t2) ->
@@ -13,7 +13,7 @@ partialsBetween = (t1, t2) ->
 partialsByTypes = (types) ->
   (a) ->
     -1 != types.indexOf(a.t)
-
+###
 indexing = false
 tmpIndex = null
 tmpDel = null
@@ -56,7 +56,8 @@ indexEvent = (evM) ->
       if point?
         s = point.getTime()
         tmpIndex[c][String(e) + String(s)] = {
-            e, # Event ObjectId
+            e: evM, # Event Metadata Document
+            c: evM.cal, # Calendar Document
             t, # Type
             s  # Start Date in milliseconds
           }
@@ -68,7 +69,7 @@ indexCids = (cIds, callback) ->
     tmpIndex[cId] = {}
     tmpDel[cId] = []
 
-  EventMetadata.find().stream()
+  EventMetadata.find({ cId: { $in: cIds } }).stream()
   .on 'data', indexEvent
   
   .on 'error', (error) ->
@@ -93,6 +94,54 @@ indexCids = (cIds, callback) ->
 
     callback(null, {index: tmpIndex, tmpDel } )
 
+deletePartialsWithCalendar = (calendarDoc, nextCal) ->
+  EventPartial.remove({c:calendarDoc}, nextCal)
+
+deletePartialsWithCId = (calendarId, nextCId) ->
+  Calendar.find({ calendarId }).exec (error, cals) ->
+    if error?
+      nextCId error
+
+    else
+      async.each cals, deletePartialsWithCalendar, nextCId
+
+savePartial = (partialObj, nextPartial) ->
+  (new EventPartial(partialObj)).save nextPartial
+
+reindexRecurring = (calendarIds, callback) ->
+  if tmpIndex? or tmpDel?
+    callback new Error("Recurring events already being indexed!")
+
+  else
+    if calendarIds?
+      indexCids calendarIds, (error, indexObj) ->
+        if error?
+          callback error
+
+        else
+          allpartials = []
+          for cId, calObj of indexObj.index
+            for eId, evMPartial of calObj
+              allpartials.push evMPartial
+
+
+          # This sorting may be uneccessary, but maybe not.
+          allpartials = allpartials.sort (a, b) ->
+            a.s - b.s
+
+          async.each calendarIds, deletePartialsWithCId, (error) -> 
+            if error?
+              callback error
+
+            else
+              async.each allpartials, savePartial, callback
+
+    else
+      callback new Error "need calendarIds"
+
+exports.reindexRecurring = reindexRecurring
+
+###
 getTSE = (t, s, e) ->
   if s and s.getTime?
     s = s.getTime()
@@ -131,31 +180,4 @@ exports.getEventsTSE = (t, s, e, callback) ->
 
     , callback
   )
-
-reindexRecurring = (calendarIds, callback) ->
-  if tmpIndex? or tmpDel?
-    callback new Error("Recurring events already being indexed!")
-
-  else
-    if calendarIds?
-      indexCids calendarIds, (error, indexObj) ->
-        if error?
-          callback error
-
-        else
-          tmppartials = []
-          for cId, calObj of indexObj.index
-            for eId, evMPartial of calObj
-              tmppartials.push evMPartial
-
-          partials = tmppartials.sort (a, b) ->
-            a.s - b.s
-
-          tmppartials = null
-
-          callback(null, indexObj)
-
-    else
-      callback new Error "need calendarIds"
-
-exports.reindexRecurring = reindexRecurring
+###

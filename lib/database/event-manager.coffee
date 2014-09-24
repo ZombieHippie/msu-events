@@ -109,18 +109,29 @@ exports.indexEvents = (auth, calendarId, callback) ->
                   else
                     if gevent.status isnt "cancelled"
                       if not evM?
-                        # Create New eventMetadata
-                        evM = new EventMetadata {
-                          cId:  calendarId,  # CalendarId
-                          eId,  # EventId for syncing
-                          i: { name: null, desc: null, loc: null }
-                        }
-                        total.created++
+                        Calendar.findOne {calendarId}, (error, cal)->
+                          if error?
+                            nextGevent error
+
+                          else if not cal?
+                            nextGevent new Error "Calendar for gevent is not active!"
+
+                          else
+                            # Create New eventMetadata
+                            evM = new EventMetadata {
+                              cId:  calendarId,  # CalendarId
+                              cal,  # Calendar Document
+                              eId,  # EventId for syncing
+                              i: { name: null, desc: null, loc: null }
+                            }
+                            total.created++
+
+                            updateEvent evM, gevent, calendarType, nextGevent
 
                       else
                         total.updated++
 
-                      updateEvent evM, gevent, calendarType, nextGevent
+                        updateEvent evM, gevent, calendarType, nextGevent
 
                     else
                       # gevent is cancelled
@@ -141,17 +152,25 @@ exports.indexEvents = (auth, calendarId, callback) ->
 
                           total.cancelled++
 
+                          Calendar.findOne {calendarId}, (error, cal)->
+                            if error?
+                              nextGevent error
 
-                          # Create New eventMetadata
-                          evM = new EventMetadata {
-                            cId:  calendarId,  # CalendarId
-                            eId,  # EventId for syncing
-                            c: true, # Cancelling event 
-                            reId: gevent.recurringEventId,
-                            s:   gevent.originalStartTime.dateTime
-                          }
+                            else if not cal?
+                              nextGevent new Error "Calendar for gevent is not active!"
 
-                          evM.save nextGevent
+                            else
+                              # Create New eventMetadata
+                              evM = new EventMetadata {
+                                cId:  calendarId,  # CalendarId
+                                cal,  # Calendar document
+                                eId,  # EventId for syncing
+                                c: true, # Cancelling event 
+                                reId: gevent.recurringEventId,
+                                s:   gevent.originalStartTime.dateTime
+                              }
+
+                              evM.save nextGevent
 
               , (error) ->
                 if error?
@@ -163,6 +182,13 @@ exports.indexEvents = (auth, calendarId, callback) ->
                   # the nextSyncToken is only returned on the last page of results
                   else if geventList.nextSyncToken?
                     calendar.nextSyncToken = geventList.nextSyncToken
+                    calendar.lastIndex = new Date()
+                    calendar.indexInfo = """
+                    updated:    #{total.updated},
+                    created:    #{total.created},
+                    cancelled:  #{total.cancelled},
+                    removed:    #{total.removed}
+                    """
                     calendar.save nextPage
 
                   else

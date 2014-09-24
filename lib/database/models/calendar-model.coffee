@@ -10,8 +10,10 @@ calendarSchema = mongoose.Schema {
   slug:   { type: String, lowercase: true, trim: true },
   description: String,
   color:    String,
+  lastIndex: Date,    # Last index date
+  indexInfo: String,  # index counts, readable string
   nextSyncToken: String,
-  suspended: Boolean # Not displayed but still indexed TODO
+  suspended: Boolean
 }
 
 statics = {

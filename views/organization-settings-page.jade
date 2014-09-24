@@ -53,7 +53,9 @@ block content
                       span.label.label-danger Suspend
               td
                 if calendar.checked
-                  a(href="?a=reindex&cId=" + cId) Reindex
+                  a.tog(href="?a=reindex&cId=" + cId)
+                    span.label.label-default.toga=calendar.mlastindex
+                    span.label.label-success Reindex
               td
                 if calendar.checked
                   a(href="/organization/settings/" + cId) More Settings
@@ -64,7 +66,7 @@ block content
                 td(colspan=3)
                   pre="Type: " + calendar.mtype + "\nName: " + calendar.mname +  "\nDesc: " + calendar.mdescription
                 td(colspan=3)
-                  pre="Events: \nPartials: \n"
+                  pre=calendar.mindexinfo
               tr(style="height:20px")
       if acted != null
         div(style="padding:1em; background:whitesmoke; margin-top:2em")
