@@ -286,10 +286,28 @@ router.post '/settings/:calendarId', (req, res) ->
               calendar.name = req.body.name
               calendar.description = req.body.description
               calendar.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-              calendar.type = if types[req.body.type]? then req.body.type else "O"
-              calendar.suspended = (/check|true|yes|on/i).test req.body.suspended
+              
+              newType = if types[req.body.type]? then req.body.type else "O"
+              typechanged = newType isnt calendar.type
+              calendar.type = newType
 
-              calendar.save redirecterr
+              if typechanged
+                EventPartial
+                .find { c: calendar }
+                .setOptions { multi: true }
+                .update { $set: { t: newType } }, (error) ->
+                  if error? then redirecterr error
+                  else
+                    EventMetadata
+                    .find { cal: calendar }
+                    .setOptions { multi: true }
+                    .update { $set: { t: newType } }, (error) ->
+                      if error? then redirecterr error
+                      else
+                        calendar.save redirecterr
+
+              else
+                calendar.save redirecterr
               
             catch e
               redirecterr error

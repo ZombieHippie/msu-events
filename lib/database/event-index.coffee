@@ -79,20 +79,13 @@ indexCids = (cIds, callback) ->
   
   .on 'close', ->
     # Delete recurring events
-    for cId, dels in tmpDel
+    for cId, dels of tmpDel
       for del in dels
         delete tmpIndex[cId][del]
 
-    # Timeout is good, I guess
-    setTimeout(
-      ->
-        # Reset
-        tmpIndex = null
-        tmpDel = null
-      , 100
-    )
-
-    callback(null, {index: tmpIndex, tmpDel } )
+    callback(null, tmpIndex )
+    tmpIndex = null
+    tmpDel = null
 
 deletePartialsWithCalendar = (calendarDoc, nextCal) ->
   EventPartial.remove({c:calendarDoc}, nextCal)
@@ -114,13 +107,13 @@ reindexRecurring = (calendarIds, callback) ->
 
   else
     if calendarIds?
-      indexCids calendarIds, (error, indexObj) ->
+      indexCids calendarIds, (error, index) ->
         if error?
           callback error
 
         else
           allpartials = []
-          for cId, calObj of indexObj.index
+          for cId, calObj of index
             for eId, evMPartial of calObj
               allpartials.push evMPartial
 
