@@ -18,11 +18,12 @@ block content
             td.action
             td.action
         tbody
-          each evt in events
+          each partial in events
+            - var evt = partial.e
             tr
               td
                 a(href="/event/" + encodeURIComponent(evt.eId))=evt.i.name
-              td(style="background-color:" + evt.backgroundColor)=(new Date(evt.s)).toLocaleString()
+              td(style="background-color:" + evt.backgroundColor)=(new Date(partial.s)).toLocaleString()
               td.action
             tr
               td

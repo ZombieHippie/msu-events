@@ -1,38 +1,37 @@
 express = require('express')
 router = express.Router()
-{ getEventsTSE } = require '../lib/database/event-index'
+{ EventPartial } = require '../lib/database/database-mongoose'
 
-weekEvents = null
 weekStart = null
 weekEnd = null
-dirty = false
+oneWeek =  7 * 24 * 60 * 60 * 1000
+
+getPage = (index) ->
+  adv = oneWeek * index
+  { s: { $gte: weekStart + adv, $lt: weekEnd + adv } }
 
 refresh = (done) ->
   a = new Date()
   today = new Date(a.getYear() + 1900, a.getMonth(), a.getDate()).getTime()
-  if weekStart isnt today or dirty is true
+  if weekStart isnt today
     weekStart = today
-    weekEnd = weekStart + (7 * 24 * 60 * 60 * 1000)
-    getEventsTSE null, weekStart, weekEnd, (error, events) ->
-      if error?
-        console.error "refresh weekStart/weekEnd error:", error
+    weekEnd = weekStart + oneWeek
+  
+  done()
 
-      else
-        weekEvents = events
-
-      dirty = false
-      done()
-  else
-    done()
-
-router.get '/refresh', (req, res) ->
-  if req.session.email?
-    dirty = true
-  res.redirect '/'
 
 router.get '/', (req, res) ->
   refresh ->
-    res.render("event-list-page", { events: weekEvents })
+    page = req.query.page
+    page = parseInt(page) or 0
+
+    query = getPage(page)
+    EventPartial
+    .find query
+    .populate { path: 'e', select: 'iC hL e s eId cId i' }
+    .exec (error, partials) ->
+      console.log query, partials
+      res.render("event-list-page", { events: partials, page })
 
 router.get '/event', (req, res) ->
   res.redirect '/'
