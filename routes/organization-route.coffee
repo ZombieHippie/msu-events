@@ -2,20 +2,8 @@ express = require('express')
 router = express.Router()
 async = require 'async'
 eventManager = require '../lib/database/event-manager'
-{ User, Calendar, EventMetadata, EventPartial } = require '../lib/database/database-mongoose'
+{ types, User, Calendar, EventMetadata, EventPartial } = require '../lib/database/database-mongoose'
 googleHook = require('../lib/database/google-calendar')
-
-# Organization types
-types = {
-  "C": "Campus Organization",
-  "I": "Interest Group",
-  "F": "Fraternity",
-  "S": "Sorority",
-  "R": "Religion",
-  "A": "Academic",
-  "P": "Sport",
-  "O": "Other"
-}
 
 router.get '/', (req, res) ->
   res.redirect('/')

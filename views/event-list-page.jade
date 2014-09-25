@@ -5,26 +5,72 @@ block content
   .page-header.text-center
     .page-title
       h1=disp
+  .row.text-center
+    h2 Events
+    ul.pagination
+      li
+        a(href=("?page=" + (page - 1) + "&types=" + types)) &laquo; Last week
+      li.active
+        - var weeks = moment(weekStart + page * oneWeek)
+        - var weekend = moment(weekStart + (page + 1) * oneWeek - oneWeek/7)
+        a(href=("?page=" + page + "&types=" + types))=weeks.format("MMMM Do") + " - " + weekend.format("MMMM Do")
+      li
+        a(href=("?page=" + (page + 1) + "&types=" + types)) Next week &raquo;
+  .row
+    .btn-group.btn-group-justified
+      a.btn.btn-default(type="button" onclick="filter.className = filter.className === 'open' ? '' : 'open'")
+        | Filter &nbsp;
+        span.caret
+    style.
+      #filter {overflow:hidden; height:0; -webkit-transition: height .4s; transition: height .4s;}
+      #filter.open {height:90px}
+      #filter label {padding:.5em}
+      #filter .btn-sm {margin-top:1em}
+    form#filter(onsubmit="return false" class=(filterOpen?"open":"") data-all-types=Object.keys(allTypes).join(""))
+      each key in Object.keys(allTypes)
+        div(style="width:33%; height:1.5em; float:left")
+          input(name=key id=key type="checkbox" checked=!!~types.indexOf(key))
+          | &nbsp;
+          label(for=key)=allTypes[key]
+      a.btn.btn-default.btn-sm(type="button" onclick="openTypes(Array.prototype.reduce.call(filter.elements, function(e, t) {return t.checked ? e + t.name : e;}, ''))")
+        | Search
+    script.
+      var filter = document.getElementById('filter')
+      function openTypes (letters) {
+        var newLocation = window.location.href.replace(/[&?]?types=[^&]*/, "")
+        window.location.href = newLocation + (filter.dataset.allTypes !== letters && letters.length !== 0? "&types=" + letters : "")
+      }
   .row
     .col-xs-12
       style.
         tbody tr td, thead tr td { padding: 1em; }
-        td.action { width: 1em }
-      h2 Events
+        td>a>h3 {border-left-width:.5em; border-left-style: solid; padding-left: .5em}
+        .day { border-bottom: 1px solid #dbdbdb; margin-top: 1em }
       table(style="width:100%")
         thead
           tr
-            td Name
-            td.action
-            td.action
+            td
+            td
+            td
         tbody
+          - var currentDay = null, evt, cal, x
           each partial in events
-            - var evt = partial.e
+            - evt = partial.e
+            - cal = partial.c
+            - x = moment(partial.s) 
+            if currentDay !== x.format("dddd")
+              - currentDay = x.format("dddd")
+              tr.day
+                td(colspan=3)
+                  h2=currentDay
+                  p=x.format("MMMM Do")
             tr
               td
-                a(href="/event/" + encodeURIComponent(evt.eId))=evt.i.name
-              td(style="background-color:" + evt.backgroundColor)=(new Date(partial.s)).toLocaleString()
-              td.action
-            tr
               td
+                a(href=evt.hL target="_blank")
+                  h3(style="border-color:" + cal.color)=evt.i.name
                 small=evt.i.desc
+                br
+                strong=cal.name
+              td
+                h3=x.format("h:mm")

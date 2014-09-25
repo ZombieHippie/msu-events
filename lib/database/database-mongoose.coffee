@@ -14,3 +14,14 @@ exports.User = require './models/user-model.coffee'
 exports.Calendar = require './models/calendar-model.coffee'
 exports.EventPartial = require './models/event-partial-model.coffee'
 exports.EventMetadata = require './models/event-metadata-model.coffee'
+
+exports.types = {
+  "C": "Campus Organization",
+  "I": "Interest Group",
+  "F": "Fraternity",
+  "S": "Sorority",
+  "R": "Religion",
+  "A": "Academic",
+  "P": "Sport",
+  "O": "Other"
+}

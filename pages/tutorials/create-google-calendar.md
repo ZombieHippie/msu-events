@@ -1,10 +1,10 @@
 # How to create a new Google Calendar
 
-[Already have a Google Calendar you want to use?](/tutorials/linking-google-calendar-with-your-organization)
+[Already have a Google Calendar you want to use?](/tutorials/submitting-your-google-calendar)
 
 In this tutorial we show you how to create a Google Calendar.
 
-Note that after you make a Google Calendar, you will still need to register it with your organization.
+Note that after you make a Google Calendar, you will still need to submit it to the website for review.
 
 ### 1. Open [Google Calendar](https://www.google.com/calendar)
 > Navigate to the Google Calendar website, where we will create a new calendar.
@@ -36,4 +36,4 @@ Note that after you make a Google Calendar, you will still need to register it w
 
 ![After creating calendar](/graphics/tutorial-create-calendar/google-calendar-create-calendar-4-created-calendar.png)
 
-Now that you have created your calendar, you can link this new calendar by following [the tutorial on linking calendars with your organization](/tutorials/linking-google-calendar-with-your-organization).
+Now that you have created your calendar, you can submit this new calendar to the website by following [the tutorial on submitting your organization](/tutorials/submitting-your-google-calendar).

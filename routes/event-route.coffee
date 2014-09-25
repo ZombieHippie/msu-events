@@ -1,6 +1,9 @@
 express = require('express')
 router = express.Router()
-{ EventPartial } = require '../lib/database/database-mongoose'
+moment = require 'moment'
+{ EventPartial, types: allTypes } = require '../lib/database/database-mongoose'
+
+allTypess = Object.keys(allTypes).join("")
 
 weekStart = null
 weekEnd = null
@@ -25,13 +28,29 @@ router.get '/', (req, res) ->
     page = req.query.page
     page = parseInt(page) or 0
 
+    types = req.query.types or allTypess
+
+    console.log types.split("")
+
     query = getPage(page)
     EventPartial
     .find query
+    .where("t").in types.split("")
     .populate { path: 'e', select: 'iC hL e s eId cId i' }
+    .populate { path: 'c', select: 'color name slug' }
+    .sort 's'
     .exec (error, partials) ->
       console.log query, partials
-      res.render("event-list-page", { events: partials, page })
+      res.render("event-list-page", {
+        events: partials,
+        page,
+        oneWeek,
+        weekStart,
+        moment,
+        allTypes,
+        types,
+        filterOpen: req.query.types?
+      })
 
 router.get '/event', (req, res) ->
   res.redirect '/'
