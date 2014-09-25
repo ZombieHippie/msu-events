@@ -30,8 +30,6 @@ router.get '/', (req, res) ->
 
     types = req.query.types or allTypess
 
-    console.log types.split("")
-
     query = getPage(page)
     EventPartial
     .find query
@@ -40,16 +38,16 @@ router.get '/', (req, res) ->
     .populate { path: 'c', select: 'color name slug' }
     .sort 's'
     .exec (error, partials) ->
-      console.log query, partials
       res.render("event-list-page", {
         events: partials,
         page,
         oneWeek,
         weekStart,
-        moment,
+        moment, # pass in the entire moment library
         allTypes,
         types,
-        filterOpen: req.query.types?
+        eventsTitle: "Events by Week",
+        filterOpen: req.query.types? and req.query.types isnt allTypess 
       })
 
 router.get '/event', (req, res) ->

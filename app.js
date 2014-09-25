@@ -76,21 +76,10 @@ app.use('/test', require('./routes/test.js'))
 app.use('/auth', require('./routes/auth-route.coffee'))
 app.use('/organization', require('./routes/organization-route.coffee'))
 
-// Preliminary indexing
-require('./lib/database/database-mongoose.coffee').Calendar.getIndexedCalendars(function (error, cIds) {
-  if (error) {
-    console.error(error)
-  } else {
-    require('./lib/database/event-index.coffee').reindexRecurring(cIds, function(error){
-      if (error) {console.error(error)};
-    })
-  }
-})
-
 app.use('/contact', function (req, res, next) {
     var notImplented = new Error("Sorry, contact isn't ready yet :-(")
     notImplented.status = 501
-    next(notImplented) 
+    next(notImplented)
 })
 
 app.use(express.static(path.join(__dirname, 'static')))

@@ -4,16 +4,6 @@ async = require 'async'
 { RRule } = require 'rrule'
 { Calendar, EventMetadata, EventPartial } = require './database-mongoose'
 
-###
-# Super temporary lookup
-partials = []
-partialsBetween = (t1, t2) ->
-  (a) ->
-    a.s > t1 and a.s < t2
-partialsByTypes = (types) ->
-  (a) ->
-    -1 != types.indexOf(a.t)
-###
 indexing = false
 tmpIndex = null
 tmpDel = null
@@ -133,44 +123,3 @@ reindexRecurring = (calendarIds, callback) ->
       callback new Error "need calendarIds"
 
 exports.reindexRecurring = reindexRecurring
-
-###
-getTSE = (t, s, e) ->
-  if s and s.getTime?
-    s = s.getTime()
-  if e and e.getTime?
-    e = e.getTime()
-  res = partials.slice(0)
-  res = res.filter(partialsBetween(s, e)) if s and e
-  res = res.filter(partialsByTypes(t)) if t
-  return res
-
-_s = (o, t) ->
-  o.s = t if typeof o is "object"
-  return o
-
-exports.getEventsTSE = (t, s, e, callback) ->
-  evPs = getTSE t, s, e
-  console.log "evPs", evPs
-  evMsTmp = {}
-  async.map(
-    evPs
-    , (evP, nextEvP) ->
-      if evMsTmp[evP.e]?
-        nextEvP(null, _s(evMsTmp[evP.e], evP.s))
-
-      else
-        EventMetadata.findOne({ eId: evP.e })
-        .exec (error, doc) ->
-          if error?
-            nextEvP error
-
-          else
-            newEvP = _s(doc?.toJSON?(), evP.s)
-            evMsTmp[evP.e] = newEvP
-
-            nextEvP null, newEvP
-
-    , callback
-  )
-###

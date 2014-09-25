@@ -6,7 +6,7 @@ block content
     .page-title
       h1=disp
   .row.text-center
-    h2 Events
+    h2=eventsTitle
     ul.pagination
       li
         a(href=("?page=" + (page - 1) + "&types=" + types)) &laquo; Last week
@@ -38,6 +38,7 @@ block content
       var filter = document.getElementById('filter')
       function openTypes (letters) {
         var newLocation = window.location.href.replace(/[&?]?types=[^&]*/, "")
+        if (!~newLocation.indexOf("?")) newLocation += "?q"
         window.location.href = newLocation + (filter.dataset.allTypes !== letters && letters.length !== 0? "&types=" + letters : "")
       }
   .row
