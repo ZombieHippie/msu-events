@@ -27,6 +27,7 @@ indexEvent = (evM) ->
     rule = RRule.fromString rruleStr
     
     points = rule.between(evM.s, endR)
+    points.push evM.s
 
   else if evM.reId?
     tmpDel[c].push String(evM.reId) + String(evM.s.getTime())

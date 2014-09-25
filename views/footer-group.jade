@@ -7,7 +7,7 @@ style.
   .login-group a.btn { margin:6px }
   .footer-divider { border-top: 1px solid rgba(0,0,0,.1); margin: 10px 0; }
   .footer-navigation a { color: #222 }
-  .footer-navigation .col-md-4.col-sm-6 {  float: none; display: inline-block; }
+  .footer-navigation .col-sm-6 {  float: none; display: inline-block; }
 .footer-divider
 .login-group
   if email
@@ -21,41 +21,24 @@ style.
       a.btn.btn-primary(href="/auth/login") Login
 .container.footer-navigation
   .row.text-center
-    .col-md-4.col-sm-6.text-center
-      br
-      strong Navigation
-      br
-      a(href="/") Browse Events
-      br
-      if email
+    if email
+      .col-sm-6.text-center
+        strong Organization
+        br
         a(href="/auth/logout") Organization Log out
         br
         a(href="/organization/settings") Organization Settings
-        br
-        a(href="/organization/refresh") Refresh Calendar Events
-        br
-        a(href="/organization/reindex") Reindex Calendar Events
-        br
-      else if !production
-        a(href="/auth/login") Organization Log in
-    .col-md-4.col-sm-6.text-center
+    .col-sm-6.text-center
       br
       strong Tutorials
       br
       a(href="/tutorials/create-google-calendar") Create a Google Calendar  
       br
       a(href="/tutorials/submitting-your-google-calendar") Submitting your Google Calendar
-      //-
-        br
-        a(href="/tutorials/linking-google-calendar-with-your-organization") Link with Google Calendar
-    .col-md-4.col-sm-6.text-center
-      if calendarIds 
-        br
-        pre=JSON.stringify(calendarIds, null, 0)
-    //-
+    .col-sm-6.text-center
       br
-      strong Contact
+      strong Navigation
       br
-      a(href="/contact/report") Report an organization
+      a(href="/today") Today's Adgenda
       br
-      a(href="/contact/developer") Contact the developer
+      a(href="/week") Weekly Adgenda

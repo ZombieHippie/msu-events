@@ -1,0 +1,24 @@
+extends layout
+
+//- Organization needs to be logged in
+block content
+  .row.text-center.w
+    - var currentDay = moment(today + page * interval)
+    - var currentDayd = currentDay.format("dddd")
+    - var mToday = moment(today)
+    - var isToday = currentDay.isSame(mToday, "day")
+    //h1.c-g=isToday ?  : currentDay.from(mToday)
+    h2=(isToday?"Today":currentDay.format("MMM Do")) + "'s Agenda"
+    style.
+      li.today a { background-color: rgba(125,180,255,0.1) }
+    .btn-group.btn-group-justified.m-t-b
+      a.btn.btn-default.hidden-xs(href=("?page=" + (page - 7) + "&types=" + types)) &laquo; Last #{currentDayd}
+      //-
+        if page > 0
+          li.today
+            a(href=("?page=0&types=" + types))="Today, "+mToday.format("MMM Do")
+      a.btn.btn-default(href=("?page=" + (page - 1) + "&types=" + types)) &laquo;
+      a.btn.btn-default(href=("?page=" + (page + 1) + "&types=" + types)) &raquo;
+      a.btn.btn-default.hidden-xs(href=("?page=" + (page + 7) + "&types=" + types)) Next #{currentDayd} &raquo;
+  include filter-component
+  include event-list-component

@@ -5,50 +5,59 @@ moment = require 'moment'
 
 allTypess = Object.keys(allTypes).join("")
 
-weekStart = null
-weekEnd = null
-oneWeek =  7 * 24 * 60 * 60 * 1000
+today = null
+oneDayMS = 24 * 60 * 60 * 1000
+oneWeekMS =  7 * oneDayMS
 
-getPage = (index) ->
-  adv = oneWeek * index
-  { s: { $gte: weekStart + adv, $lt: weekEnd + adv } }
+getPage = (index, interval) ->
+  adv = interval * index
+  { s: { $gte: today + adv, $lt: today + adv + interval} }
 
 refresh = (done) ->
   a = new Date()
-  today = new Date(a.getYear() + 1900, a.getMonth(), a.getDate()).getTime()
-  if weekStart isnt today
-    weekStart = today
-    weekEnd = weekStart + oneWeek
+  newToday = new Date(a.getYear() + 1900, a.getMonth(), a.getDate()).getTime()
+  if today isnt newToday
+    today = newToday
   
   done()
 
+getSpanGet = (interval, render) ->
+  (req, res) ->
+    refresh ->
+      qpage = req.query.page
+      qpage = parseInt(qpage) or 0
 
-router.get '/', (req, res) ->
-  refresh ->
-    page = req.query.page
-    page = parseInt(page) or 0
+      qtypes = req.query.types or allTypess
 
-    types = req.query.types or allTypess
+      query = getPage(qpage, interval)
+      EventPartial
+      .find query
+      .where("t").in qtypes.split("")
+      .populate { path: 'e', select: 'iC hL e s eId cId i' }
+      .populate { path: 'c', select: 'color name slug' }
+      .sort 's'
+      .exec (error, partials) ->
+        res.render(render, {
+          events: partials,
+          page: qpage,
+          types: qtypes,
+          interval,
+          today,
+          allTypes,
+          moment, # pass in the entire moment library
+          filterOpen: req.query.types? and req.query.types isnt allTypess 
+        })
 
-    query = getPage(page)
-    EventPartial
-    .find query
-    .where("t").in types.split("")
-    .populate { path: 'e', select: 'iC hL e s eId cId i' }
-    .populate { path: 'c', select: 'color name slug' }
-    .sort 's'
-    .exec (error, partials) ->
-      res.render("event-list-page", {
-        events: partials,
-        page,
-        oneWeek,
-        weekStart,
-        moment, # pass in the entire moment library
-        allTypes,
-        types,
-        eventsTitle: "Events by Week",
-        filterOpen: req.query.types? and req.query.types isnt allTypess 
-      })
+dayView = getSpanGet(oneDayMS, "event-list-day")
+router.get '/', ((req,res) -> res.redirect('/today'))
+router.get '/day', dayView
+router.get '/today', (req, res) ->
+  if req.query.page? and parseInt(req.query.page) isnt 0
+    res.redirect req.originalUrl.replace(/^\/today/, "/day")
+  else
+    dayView req, res
+
+router.get '/week', getSpanGet(oneWeekMS, "event-list-week")
 
 router.get '/event', (req, res) ->
   res.redirect '/'

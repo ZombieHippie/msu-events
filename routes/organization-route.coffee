@@ -89,7 +89,10 @@ router.get '/settings', (req, res) ->
                         if error? then render error else
                         if cal?
                           cal.suspended = false
-                          cal.save render
+
+                          eventManager.reindexEvents [cId], (error) ->
+                            if error? then render error else
+                              cal.save render
                         else
                           render "Calendar-doesnt-exist!"
 

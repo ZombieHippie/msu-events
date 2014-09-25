@@ -1,0 +1,48 @@
+.row
+  .col-xs-12
+    style.
+      tbody tr td, thead tr td { padding: 1em; }
+      .day { border-bottom: 1px solid #dbdbdb; margin-top: 1em }
+      .m-t {width:4em; background: #EEE;padding: 0.5em;}
+      tr h3 {margin: 0}
+      .aut {border-bottom-style: solid; border-bottom-width:1px; }
+      .loc {color:green}
+    .m-p
+      table.table
+        tbody
+          if events.length !== 0
+            - var currentDay = null, evt, cal, x, loc
+            each partial in events
+              - evt = partial.e
+              - cal = partial.c
+              - x = moment(partial.s)
+              - y = x.clone().add(evt.e - evt.s)
+              if currentDay !== x.format("dddd")
+                - currentDay = x.format("dddd")
+                tr.day
+                  td.no-b(colspan=4)
+                    h2=currentDay
+                    p=x.format("MMMM Do")
+              tr
+                td(colspan=3)
+                  a(href=evt.hL target="_blank")
+                    h3=evt.i.name
+                td.m-t
+                  h3=x.format("h:mma")
+              tr
+                td.no-b.text-center(colspan=2 width="50%")
+                  strong.aut(style="border-color:" + cal.color)=cal.name
+                  //-
+                    br
+                    small=evt.i.desc
+                td.no-b(colspan=2)
+                  - loc = evt.i.loc
+                  - if(typeof loc === "string"){ if(loc.length > 30) { loc = loc.slice(0, 30).replace(/\s\S+$/,"") + "..." } loc += " "}
+                  small.loc=loc
+                  small=x.fromNow()
+          else
+            tr
+              td(colspan=4).text-center
+                h3 No events found
+                br
+                br

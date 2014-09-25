@@ -1,0 +1,32 @@
+.row.w.text-center
+  .btn-group.btn-group-justified.m-t-b
+    a.btn.btn-default(type="button" onclick="filter.className = filter.className === 'open' ? '' : 'open'")
+      | Filter &nbsp;
+      span.caret
+  style.
+    #filter {overflow:hidden; max-height:0; -webkit-transition: max-height .4s; transition: max-height .4s;}
+    #filter.open {max-height:6em}
+    @media(max-width: 600px) {
+      #filter.open {max-height:10em}
+    }
+    #filter>.text-center>div { height:1.5em; display:inline-block; overflow:hidden; margin-right: 1.3em}
+    #filter>.text-center>div>label {display:inline;}
+    #filter label {padding:.5em}
+    #filter .btn-sm {margin-top:1em}
+  form#filter(onsubmit="return false" class=(filterOpen?"open":"") data-all-types=Object.keys(allTypes).join(""))
+    .text-center
+      each key in Object.keys(allTypes)
+        div
+          input(name=key id=key type="checkbox" checked=!!~types.indexOf(key))
+          | &nbsp;
+          label(for=key)=allTypes[key]
+    .text-center
+      a.btn.btn-default.btn-sm(type="button" onclick="openTypes(Array.prototype.reduce.call(filter.elements, function(e, t) {return t.checked ? e + t.name : e;}, ''))")
+        | Search
+  script.
+    var filter = document.getElementById('filter')
+    function openTypes (letters) {
+      var newLocation = window.location.href.replace(/[&?]?types=[^&]*/, "")
+      if (!~newLocation.indexOf("?")) newLocation += "?q"
+      window.location.href = newLocation + (filter.dataset.allTypes !== letters && letters.length !== 0? "&types=" + letters : "")
+    }
