@@ -4,14 +4,13 @@ extends layout
 block content
   .row.text-center.w
     h1.c-g Weekly Agenda 
-    h2
-      - var weeks = moment(today + page * interval)
-      - var weekend = moment(today + (page + 1) * interval - interval/7)
-      = weeks.format("MMM Do") + " - " + weekend.format("MMM Do")
+    - var weekstart = moment(today + page * interval)
+    - var weekend = moment(today + (page + 1) * interval - interval/7)
+    - var mToday = moment(today)
+    - var isToday = weekstart.isSame(mToday, "day")
+    h2= (isToday?"This Week: " : "") + weekstart.format("MMM Do") + " - " + weekend.format("MMM Do")
     .btn-group-justified.btn-group.m-t-b
-      .btn.btn-default
-        a(href=("?page=" + (page - 1) + "&types=" + types)) &laquo; Last week
-      .btn.btn-default
-        a(href=("?page=" + (page + 1) + "&types=" + types)) Next week &raquo;
+      a.btn.btn-default(href=("?page=" + (page - 1) + "&types=" + types)) &laquo; Last week
+      a.btn.btn-default(href=("?page=" + (page + 1) + "&types=" + types)) Next week &raquo;
   include filter-component
   include event-list-component

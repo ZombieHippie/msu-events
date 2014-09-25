@@ -5,7 +5,7 @@
       .day { border-bottom: 1px solid #dbdbdb; margin-top: 1em }
       .m-t {width:4em; background: #EEE;padding: 0.5em;}
       tr h3 {margin: 0}
-      .aut {border-bottom-style: solid; border-bottom-width:1px; }
+      .aut { text-transform: uppercase; text-decoration: underline }
       .loc {color:green}
     .m-p
       table.table
@@ -31,7 +31,8 @@
                   h3=x.format("h:mma")
               tr
                 td.no-b.text-center(colspan=2 width="50%")
-                  strong.aut(style="border-color:" + cal.color)=cal.name
+                  strong.aut(style="color:" + cal.color)
+                    small=cal.name
                   //-
                     br
                     small=evt.i.desc
