@@ -8,6 +8,7 @@ block content
     - var weekend = moment(today + (page + 1) * interval - interval/7)
     - var mToday = moment(today)
     - var isToday = weekstart.isSame(mToday, "day")
+    #interval(style="display:none" data-i=interval data-t=today)
     h2= (isToday?"This Week: " : "") + weekstart.format("MMM Do") + " - " + weekend.format("MMM Do")
     .btn-group-justified.btn-group.m-t-b
       a.btn.btn-default(href=("?page=" + (page - 1) + "&types=" + types)) &laquo; Last week

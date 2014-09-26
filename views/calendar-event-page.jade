@@ -1,0 +1,46 @@
+extends layout
+
+//- Organization needs to be logged in
+block content
+  .row.w
+    .page-header.text-center
+      .page-title
+        h4
+          a(href=("/calendar/" + evM.cal.slug) style="text-transform:uppercase; color:" + evM.cal.color)=evM.cal.name
+          | &nbsp; - &nbsp;
+          span=allTypes[evM.t]
+  - var evte = evts + evM.e.getTime() - evM.s.getTime(), m_e = moment(evte), m_s = moment(evts) 
+  #event(style="display:none" data-name=evM.i.name data-description=evM.i.desc data-location=evM.i.loc data-start=evts data-end=evte)
+  .row.w.text-center
+    .col-xs-12
+      .btn-group.btn-group-justified.m-t-b
+        a#add-to-gcal.btn.btn-default(type="button" target="_blank")
+          | Add to Google Calendar
+      script.
+        var e = document.getElementById("event").dataset,
+          gref = "https://www.google.com/calendar/render?action=TEMPLATE" +
+            "&text=" + encodeURIComponent(e.name) +
+            "&dates=" + (new Date(parseInt(e.start))).toISOString().replace(/\W+/g,"").slice(0,-4) + "Z" +
+            "/" + (new Date(parseInt(e.end))).toISOString().replace(/\W+/g,"").slice(0,-4) + "Z" +
+            "&details=" + encodeURIComponent(e.description) +
+            "&location=" + encodeURIComponent(e.location) +
+            "&pli=1&uid=&sf=true&output=xml"
+        document.getElementById("add-to-gcal").href = gref
+      p
+  .row
+    .col-xs-12
+      .m-p(style="padding:2em")
+        h2=evM.i.name
+        style.
+          #time { color: blue; font-weight: bold}
+          #time span { color: black; font-weight: normal}
+          #location { color:green }
+        label(for="description") Description
+        p#description=evM.i.desc
+        label(for="time") When
+        if m_e.isSame(m_s, "d")
+          p#time!=m_s.format("MMMM Do [<span>from</span>] h:mma") + m_e.format(" [<span>to</span>] h:mma")
+        else
+          p#time!=m_s.format("MMMM Do h:mma") + m_e.format(" [<span>to</span>] MMMM, Do h:mma")
+        label(for="location") Where
+        p#location=evM.i.loc

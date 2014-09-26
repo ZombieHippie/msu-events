@@ -7,7 +7,7 @@ block content
     - var currentDayd = currentDay.format("dddd")
     - var mToday = moment(today)
     - var isToday = currentDay.isSame(mToday, "day")
-    //h1.c-g=isToday ?  : currentDay.from(mToday)
+    #interval(style="display:none" data-i=interval data-t=today)
     h2=(isToday?"Today":currentDay.format("MMM Do")) + "'s Agenda"
     style.
       li.today a { background-color: rgba(125,180,255,0.1) }

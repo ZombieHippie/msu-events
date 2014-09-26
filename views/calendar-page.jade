@@ -1,0 +1,16 @@
+extends layout
+
+//- Organization needs to be logged in
+block content
+  .row.w
+    .page-header.text-center
+      .page-title
+        h1=calendar.name
+        h3=allTypes[calendar.type]
+        p=calendar.description
+  .row.w
+    .col-xs-12
+      a(href="/") Return to Events
+      h2 Upcoming Events
+      div(style="border-bottom: 2px solid " + calendar.color)
+  include event-list-component

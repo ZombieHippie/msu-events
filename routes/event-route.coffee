@@ -1,7 +1,7 @@
 express = require('express')
 router = express.Router()
 moment = require 'moment'
-{ EventPartial, types: allTypes } = require '../lib/database/database-mongoose'
+{ EventMetadata, EventPartial, Calendar, types: allTypes } = require '../lib/database/database-mongoose'
 
 allTypess = Object.keys(allTypes).join("")
 
@@ -19,7 +19,7 @@ refresh = (done) ->
   if today isnt newToday
     today = newToday
   
-  done()
+  done?()
 
 getSpanGet = (interval, render) ->
   (req, res) ->
@@ -27,13 +27,19 @@ getSpanGet = (interval, render) ->
       qpage = req.query.page
       qpage = parseInt(qpage) or 0
 
+      if interval?
+        qinterval = interval
+      else
+        qinterval = req.query.i
+        qinterval = parseInt(qinterval) or oneDayMS
+
       qtypes = req.query.types or allTypess
 
-      query = getPage(qpage, interval)
+      query = getPage(qpage, qinterval)
       EventPartial
       .find query
       .where("t").in qtypes.split("")
-      .populate { path: 'e', select: 'iC hL e s eId cId i' }
+      .populate { path: 'e', select: 'e s eId i' }
       .populate { path: 'c', select: 'color name slug' }
       .sort 's'
       .exec (error, partials) ->
@@ -41,7 +47,7 @@ getSpanGet = (interval, render) ->
           events: partials,
           page: qpage,
           types: qtypes,
-          interval,
+          interval: qinterval,
           today,
           allTypes,
           moment, # pass in the entire moment library
@@ -59,10 +65,57 @@ router.get '/today', (req, res) ->
 
 router.get '/week', getSpanGet(oneWeekMS, "event-list-week")
 
-router.get '/event', (req, res) ->
-  res.redirect '/'
+router.get '/list', getSpanGet(null, "event-list-component")
 
-router.get '/event/:eId', (req, res) ->
-  res.end("Event:#{req.params.eId}\nNot ready yet :-)")
+router.get '/calendar/:slug', (req, res) ->
+  slug = req.params.slug
+  Calendar
+  .findOne({ slug })
+  .select 'description color name type'
+  .exec (error, cal) ->
+    if error or not cal?
+      res.render 'error', { message: "Calendar not found" }
 
+    else
+      EventPartial
+      .find { c: cal, s: { $gte: today } }
+      .populate { path: 'e', select: 'e s eId i' }
+      .populate { path: 'c', select: 'color name slug' }
+      .limit 10
+      .sort 's'
+      .exec (error, partials) ->
+        res.render("calendar-page", {
+          events: partials,
+          calendar: cal,
+          today,
+          allTypes,
+          moment # pass in the entire moment library
+        })
+
+router.get '/calendar/:slug/event/:evtname.:eid.:evts', (req, res) ->
+  eId = req.params.eid
+  evts = parseInt(req.params.evts)
+  slug = req.params.slug
+  if not evts
+    res.redirect '/calendar/' + slug
+
+  else
+    EventMetadata
+    .findOne({ eId })
+    .select 'i hL iC s e t cal'
+    .populate { path: 'cal', select: 'color name slug' }
+    .exec (error, evM) ->
+      if error or not evM?
+        res.render 'error', { message: "Event not found" }
+
+      else
+        res.render("calendar-event-page", {
+          evM,
+          evts,
+          today,
+          allTypes,
+          moment # pass in the entire moment library
+        })
+
+refresh()
 module.exports = router

@@ -5,7 +5,7 @@
       .day { border-bottom: 1px solid #dbdbdb; margin-top: 1em }
       .m-t {width:4em; background: #EEE;padding: 0.5em;}
       tr h3 {margin: 0}
-      .aut { text-transform: uppercase; text-decoration: underline }
+      .aut { text-transform: uppercase }
       .loc {color:green}
     .m-p
       table.table
@@ -25,14 +25,15 @@
                     p=currentDay.format("MMMM Do")
               tr
                 td(colspan=3)
-                  a(href=evt.hL target="_blank")
+                  a(href="/calendar/#{cal.slug}/event/" + evt.i.name.replace(/\W+/g, "-") + ".#{evt.eId}.#{partial.s}")
                     h3=evt.i.name
                 td.m-t
                   h3=x.format("h:mma")
               tr
                 td.no-b.text-center(colspan=2 width="50%")
-                  strong.aut(style="color:" + cal.color)
-                    small=cal.name
+                  a.aut(href="/calendar/#{cal.slug}" style="color:" + cal.color)
+                    strong
+                      small=cal.name
                   //-
                     br
                     small=evt.i.desc
