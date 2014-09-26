@@ -5,9 +5,9 @@ var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var session = require('express-session')
 
-var production = app.get('env') === 'production'
-
 var app = express()
+
+var production = app.get('env') === 'production'
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))

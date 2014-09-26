@@ -17,12 +17,12 @@
               - cal = partial.c
               - x = moment(partial.s)
               - y = x.clone().add(evt.e - evt.s)
-              if currentDay !== x.format("dddd")
-                - currentDay = x.format("dddd")
+              if currentDay == null || !currentDay.isSame(x, "d")
+                - currentDay = x.clone()
                 tr.day
                   td.no-b(colspan=4)
-                    h2=currentDay
-                    p=x.format("MMMM Do")
+                    h2=currentDay.format("dddd")
+                    p=currentDay.format("MMMM Do")
               tr
                 td(colspan=3)
                   a(href=evt.hL target="_blank")
