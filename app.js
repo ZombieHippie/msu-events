@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var session = require('express-session')
 
-var production = false
+var production = app.get('env') === 'production'
 
 var app = express()
 
