@@ -25,6 +25,22 @@ saveTokens = (error, email, tokens) ->
       user.save (err, user) ->
         # console.log err, user
 
+# Insert the specified calendar into the user's list of calendars 
+router.get '/insert', (req, res) ->
+  cId = req.query.cId
+  redir = req.query.redirect
+  if cId? and redir?
+
+  else if redir?
+    res.redirect redir
+
+  else
+    res.render 'error', {
+      error: {
+        message: "Unable to insert calendar into user's calendar list"
+      }
+    }
+
 router.get '/~google-oauth2', googleHook.handleOAuth2(saveTokens)
 
 # After the user is logged in, the session.email is set then is redirected to here,

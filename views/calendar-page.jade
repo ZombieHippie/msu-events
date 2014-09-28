@@ -8,6 +8,12 @@ block content
         h1=calendar.name
         h3=allTypes[calendar.type]
         p=calendar.description
+      .btn-group.btn-group-justified.m-t-b
+        a#insert-gcal.btn.btn-default(type="button" target="_blank" href="https://www.google.com/calendar/render?action=SUBSCRIBE&cid=" + encodeURIComponent(calendar.calendarId) + "#i")
+          strong Subscribe
+          | &nbsp;to the&nbsp;
+          span(style="font-weight: bold; color: " + calendar.color)=calendar.name
+          | 's Google Calendar
   .row.w
     .col-xs-12
       a(href="/") Return to Events

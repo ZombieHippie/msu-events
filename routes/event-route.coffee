@@ -21,7 +21,7 @@ refresh = (done) ->
   
   done?()
 
-getSpanGet = (interval, render) ->
+getSpanGet = (interval, render, limit=-1) ->
   (req, res) ->
     refresh ->
       qpage = req.query.page
@@ -34,6 +34,9 @@ getSpanGet = (interval, render) ->
         qinterval = parseInt(qinterval) or oneDayMS
 
       qtypes = req.query.types or allTypess
+
+      # Query doesn't do anything yet
+      qq = req.query.q or ""
 
       query = getPage(qpage, qinterval)
       EventPartial
@@ -49,6 +52,7 @@ getSpanGet = (interval, render) ->
           types: qtypes,
           interval: qinterval,
           today,
+          q: qq,
           allTypes,
           moment, # pass in the entire moment library
           filterOpen: req.query.types? and req.query.types isnt allTypess 
@@ -63,6 +67,46 @@ router.get '/today', (req, res) ->
   else
     dayView req, res
 
+# Browse groups
+router.get '/browse', (req, res) ->
+  qpage = req.query.page
+  qpage = parseInt(qpage) or 0
+
+  qtypes = req.query.types or allTypess
+
+  # Query doesn't do anything yet
+  qq = req.query.q or ""
+
+  #if typeof qq is "string" and qq.length
+  #  finder =
+  #    Calendar
+  #    .find { $text: { $search: qq } }#, { score: { $meta: "textScore" } }
+  #    #.sort { score : { $meta : 'textScore' } }
+  #else
+  #  finder =
+  #    Calendar
+  #    .find()
+  #    .sort "lastIndex"
+
+  Calendar.find()
+  .select 'calendarId type name slug description color'
+  .limit 10
+  .skip qpage
+  .where("type").in qtypes.split("")
+  .exec (error, calendars) ->
+    if error
+      res.render "error", { error }
+
+    else
+      res.render("event-list-browse", {
+        cales: calendars,
+        page: qpage,
+        types: qtypes,
+        q: qq,
+        allTypes,
+        filterOpen: req.query.types? and req.query.types isnt allTypess 
+      })
+
 router.get '/week', getSpanGet(oneWeekMS, "event-list-week")
 
 router.get '/list', getSpanGet(null, "event-list-component")
@@ -71,7 +115,7 @@ router.get '/calendar/:slug', (req, res) ->
   slug = req.params.slug
   Calendar
   .findOne({ slug })
-  .select 'description color name type'
+  .select 'description color name type calendarId slug'
   .exec (error, cal) ->
     if error or not cal?
       res.render 'error', { message: "Calendar not found" }

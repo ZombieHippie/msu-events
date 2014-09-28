@@ -21,10 +21,18 @@
           | &nbsp;
           label(for=key)=allTypes[key]
     .text-center
-      a.btn.btn-default.btn-sm(type="button" onclick="openTypes(Array.prototype.reduce.call(filter.elements, function(e, t) {return t.checked ? e + t.name : e;}, ''))")
+      a.btn.btn-default.btn-sm(type="button" onclick="openTypes(getFilterLetters())")
         | Search
   script.
     var filter = document.getElementById('filter')
+    function getFilterLetters () {
+      return Array.prototype.reduce.call(
+        filter.elements,
+        function(e, t) {
+          return t.checked ? e + t.name : e;
+        }
+      , '')
+    }
     function openTypes (letters) {
       var newLocation = window.location.href.replace(/[&?]?types=[^&]*/, "")
       if (!~newLocation.indexOf("?")) newLocation += "?q"

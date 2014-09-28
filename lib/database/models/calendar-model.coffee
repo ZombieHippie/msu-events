@@ -16,6 +16,8 @@ calendarSchema = mongoose.Schema {
   suspended: Boolean
 }
 
+# calendarSchema.index { name: 'text', description: 'text', owner: 'text' }
+
 statics = {
   getCalendar: (calendarId, callback) ->
     this.findOne({ calendarId })
