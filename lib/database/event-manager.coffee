@@ -2,7 +2,7 @@
 async = require 'async'
 googleHook = require './google-calendar'
 { RRule } = require 'rrule'
-{ Calendar, EventMetadata, EventPartial } = require './database-mongoose'
+{ Calendar, EventMetadata, EventPartial, TextSearch } = require './database-mongoose'
 { reindexRecurring } = require './event-index'
 
 ISO = (str) ->
@@ -25,7 +25,25 @@ updateEvent = (evM, gevent, t, callback) ->
   evM.r = gevent.recurrence[0].replace(/^RRULE:/, "")        if gevent.recurrence?.length
   evM.reId = gevent.recurringEventId  if gevent.recurringEventId?
 
-  evM.save callback
+  evM.save (error) ->
+    if error?
+      callback error
+
+    else
+      # Update or create TextSearch
+      TextSearch.findOne {e: evM}, (error, tSearch) ->
+        if error?
+          callback error
+
+        else
+          if not tSearch?
+            tSearch = new TextSearch({e: evM, c: evM.cal})
+          tSearch.t = [
+            evM.i.name,
+            evM.i.desc
+          ]
+
+          tSearch.save(callback)
 
 exports.reindexEvents = (calendarIds, callback) ->
   reindexRecurring calendarIds, (error, indexObj) ->

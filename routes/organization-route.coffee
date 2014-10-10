@@ -2,7 +2,7 @@ express = require('express')
 router = express.Router()
 async = require 'async'
 eventManager = require '../lib/database/event-manager'
-{ types, User, Calendar, EventMetadata, EventPartial } = require '../lib/database/database-mongoose'
+{ types, User, Calendar, EventMetadata, EventPartial, TextSearch } = require '../lib/database/database-mongoose'
 googleHook = require('../lib/database/google-calendar')
 
 router.get '/', (req, res) ->
@@ -106,7 +106,11 @@ router.get '/settings', (req, res) ->
                             if error?
                               render error
                             else
-                              EventPartial.remove {c:cal}, render
+                              console.log "parallel"
+                              async.parallel [
+                                ((cb)-> EventPartial.remove({c:cal}, cb))
+                                ((cb)-> TextSearch.remove({c:cal}, cb)) 
+                              ], render
                         else
                           render "Calendar-doesnt-exist!"
 
@@ -119,16 +123,12 @@ router.get '/settings', (req, res) ->
                             if error? then render error else
 
                             if cal?
-                              EventPartial.remove {c:cal}, (error) ->
-                                if error?
-                                  render error
-
-                                else
-                                  EventMetadata.remove {cId}, (error) ->
-                                    if error?
-                                      render error
-                                    else
-                                      Calendar.remove {calendarId: cId}, render
+                              async.parallel [
+                                ((cb)-> EventPartial.remove {c:cal}, cb)
+                                ((cb)-> TextSearch.remove {c:cal}, cb)
+                                ((cb)-> EventMetadata.remove {cId}, cb)
+                                ((cb)-> Calendar.remove {calendarId: cId}, cb)
+                              ], render
                             else
                               render "Calendar-doesnt-exist!"
 
@@ -159,7 +159,7 @@ router.get '/settings', (req, res) ->
                             owner: email,
                             name: gcalendar.summary,
                             slug: gcalendar.summary.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                            type: "O",
+                            type: "I",
                             description: gcalendar.description,
                             color: gcalendar.backgroundColor,
                             suspended: false
@@ -197,6 +197,28 @@ router.post '/settings/:calendarId', (req, res) ->
               calendar.name = req.body.name
               calendar.description = req.body.description
               calendar.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
+              # Called after calendar is saved
+              updateTextSearch = (error) ->
+                if error?
+                  redirecterr error
+
+                else
+                  # Update or create TextSearch
+                  TextSearch.findOne {c: calendar}, (error, tSearch) ->
+                    if error?
+                      callback error
+
+                    else
+                      if not tSearch?
+                        tSearch = new TextSearch({c: calendar})
+                      tSearch.t = [
+                        calendar.name,
+                        calendar.description
+                      ]
+
+                      tSearch.save redirecterr
+
               
               newType = if types[req.body.type]? then req.body.type else "O"
               typechanged = newType isnt calendar.type
@@ -215,12 +237,12 @@ router.post '/settings/:calendarId', (req, res) ->
                     .update { $set: { t: newType } }, (error) ->
                       if error? then redirecterr error
                       else
-                        calendar.save redirecterr
+                        calendar.save updateTextSearch
 
               else
-                calendar.save redirecterr
+                calendar.save updateTextSearch
               
-            catch e
+            catch error
               redirecterr error
         
         Calendar.getCalendar calendarId, (error, calendar) ->
