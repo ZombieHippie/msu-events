@@ -22,8 +22,8 @@ updateEvent = (evM, gevent, t, callback) ->
 
   evM.t = t
 
-  evM.r = gevent.recurrence[0].replace(/^RRULE:/, "")        if gevent.recurrence?.length
-  evM.reId = gevent.recurringEventId  if gevent.recurringEventId?
+  evM.r = gevent.recurrence[0].replace(/^RRULE:/, "")   if gevent.recurrence?.length
+  evM.reId = gevent.recurringEventId                    if gevent.recurringEventId?
 
   evM.save (error) ->
     if error?
@@ -37,8 +37,8 @@ updateEvent = (evM, gevent, t, callback) ->
 
         else
           if not tSearch?
-            tSearch = new TextSearch({e: evM, c: evM.cal})
-          tSearch.t = [
+            tSearch = new TextSearch({e: evM, t: evM.t, c: evM.cal})
+          tSearch.s = [
             evM.i.name,
             evM.i.desc
           ]

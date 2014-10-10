@@ -211,7 +211,8 @@ router.post '/settings/:calendarId', (req, res) ->
                     else
                       if not tSearch?
                         tSearch = new TextSearch({c: calendar})
-                      tSearch.t = [
+                      tSearch.t = calendar.type
+                      tSearch.s = [
                         calendar.name,
                         calendar.description
                       ]
@@ -219,24 +220,31 @@ router.post '/settings/:calendarId', (req, res) ->
                       tSearch.save redirecterr
 
               
-              newType = if types[req.body.type]? then req.body.type else "O"
+              newType = if types[req.body.type]? then req.body.type else "I"
               typechanged = newType isnt calendar.type
               calendar.type = newType
 
               if typechanged
-                EventPartial
-                .find { c: calendar }
-                .setOptions { multi: true }
-                .update { $set: { t: newType } }, (error) ->
-                  if error? then redirecterr error
-                  else
+                async.parallel [
+                  ((cb) ->
+                    EventPartial
+                    .find { c: calendar }
+                    .setOptions { multi: true }
+                    .update { $set: { t: newType } }, cb
+                  ),
+                  ((cb) ->
+                    TextSearch
+                    .find { c: calendar }
+                    .setOptions { multi: true }
+                    .update { $set: { t: newType } }, cb
+                  ),
+                  ((cb) ->
                     EventMetadata
                     .find { cal: calendar }
                     .setOptions { multi: true }
-                    .update { $set: { t: newType } }, (error) ->
-                      if error? then redirecterr error
-                      else
-                        calendar.save updateTextSearch
+                    .update { $set: { t: newType } }, cb
+                  )
+                ], updateTextSearch
 
               else
                 calendar.save updateTextSearch

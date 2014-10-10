@@ -1,7 +1,8 @@
 express = require('express')
 router = express.Router()
 moment = require 'moment'
-{ EventMetadata, EventPartial, Calendar, types: allTypes } = require '../lib/database/database-mongoose'
+async = require 'async'
+{ EventMetadata, EventPartial, Calendar, TextSearch, types: allTypes } = require '../lib/database/database-mongoose'
 
 allTypess = Object.keys(allTypes).join("")
 
@@ -68,44 +69,46 @@ router.get '/today', (req, res) ->
     dayView req, res
 
 # Browse groups
-router.get '/browse', (req, res) ->
-  qpage = req.query.page
-  qpage = parseInt(qpage) or 0
-
+router.get '/search', (req, res) ->
   qtypes = req.query.types or allTypess
 
   # Query doesn't do anything yet
   qq = req.query.q or ""
 
-  #if typeof qq is "string" and qq.length
-  #  finder =
-  #    Calendar
-  #    .find { $text: { $search: qq } }#, { score: { $meta: "textScore" } }
-  #    #.sort { score : { $meta : 'textScore' } }
-  #else
-  #  finder =
-  #    Calendar
-  #    .find()
-  #    .sort "lastIndex"
+  if qq.length is 0
+    res.render("search-results-page", {allTypes, types:allTypess})
+  else
+    TextSearch.textSearch qq, {
+        limit: 20
+        filter: { t: { $in: qtypes.split("") } }
+      }, (error, docs) ->
+        if error
+          res.render 'error', { error }
 
-  Calendar.find()
-  .select 'calendarId type name slug description color'
-  .limit 10
-  .skip qpage
-  .where("type").in qtypes.split("")
-  .exec (error, calendars) ->
-    if error
-      res.render "error", { error }
+        else
+          async.map(
+            docs.results
+            ((doc, cb) ->
+              TextSearch
+              .findById(doc.obj._id)
+              .populate { path: 'e', select: 'e s eId i' }
+              .populate { path: 'c', select: 'color name slug' }
+              .exec cb
+            )
+            ((error, map) ->
+              if error
+                res.render "error", { error }
 
-    else
-      res.render("event-list-browse", {
-        cales: calendars,
-        page: qpage,
-        types: qtypes,
-        q: qq,
-        allTypes,
-        filterOpen: req.query.types? and req.query.types isnt allTypess 
-      })
+              else
+                res.render("search-results-page", {
+                  docs: map,
+                  types: qtypes,
+                  q: qq,
+                  allTypes,
+                  filterOpen: req.query.types? and req.query.types isnt allTypess 
+                })
+            )
+        )
 
 router.get '/week', getSpanGet(oneWeekMS, "event-list-week")
 

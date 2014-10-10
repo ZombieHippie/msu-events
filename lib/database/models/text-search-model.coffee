@@ -5,7 +5,8 @@ textSearch = require('mongoose-text-search')
 textSearchSchema = mongoose.Schema {
   e: { type: mongoose.Schema.Types.ObjectId, ref: 'EventMetadata' }, # Optional
   c: { type: mongoose.Schema.Types.ObjectId, ref: 'Calendar' }, # Optional
-  t: [String], # Text to search [Name, Description]
+  t: String # type
+  s: [String], # Text to search [Name, Description]
 }
 
 statics = {
@@ -20,6 +21,6 @@ for name, methodfn of methods
   textSearchSchema.methods[name] = methodfn
 
 textSearchSchema.plugin(textSearch)
-textSearchSchema.index({ t: 'text' });
+textSearchSchema.index({ s: 'text' });
 
 module.exports = mongoose.model 'TextSearch', textSearchSchema
