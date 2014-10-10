@@ -106,7 +106,6 @@ router.get '/settings', (req, res) ->
                             if error?
                               render error
                             else
-                              console.log "parallel"
                               async.parallel [
                                 ((cb)-> EventPartial.remove({c:cal}, cb))
                                 ((cb)-> TextSearch.remove({c:cal}, cb)) 
@@ -124,10 +123,10 @@ router.get '/settings', (req, res) ->
 
                             if cal?
                               async.parallel [
-                                ((cb)-> EventPartial.remove {c:cal}, cb)
-                                ((cb)-> TextSearch.remove {c:cal}, cb)
-                                ((cb)-> EventMetadata.remove {cId}, cb)
-                                ((cb)-> Calendar.remove {calendarId: cId}, cb)
+                                ((cb)-> EventPartial.remove({c:cal}, cb))
+                                ((cb)-> TextSearch.remove({c:cal}, cb))
+                                ((cb)-> EventMetadata.remove({cId}, cb))
+                                ((cb)-> Calendar.remove({calendarId: cId}, cb))
                               ], render
                             else
                               render "Calendar-doesnt-exist!"
