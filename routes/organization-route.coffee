@@ -56,8 +56,8 @@ router.get '/settings', (req, res) ->
 
                 render = (error) ->
                   if error?
-                    console.error "RENDERERROR", error
-                    res.redirect "/?error=" + error
+                    res.render "error", { error }
+
                   else
                     if acted
                       res.redirect "/organization/settings"
@@ -153,32 +153,30 @@ router.get '/settings', (req, res) ->
                       googleHook.getCalendar().calendarList.get getOptions, (error, gcalendar) ->
                         if error? then render error
                         else
-                          activatingCal = new Calendar {
+                          acted = { a, targetCalendar: null }
+                          
+                          (new Calendar {
                             calendarId: cId,
                             owner: email,
                             name: gcalendar.summary,
                             slug: gcalendar.summary.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
                             type: "I",
-                            description: gcalendar.description,
+                            description: gcalendar.description or "",
                             color: gcalendar.backgroundColor,
                             suspended: false
-                          }
+                          }).save (error, cal)->
+                            if error?
+                              render error
 
-                          activatingTextSearch = new TextSearch {
-                            c: activatingCal,
-                            t: activatingCal.get("type"),
-                            s: [
-                              activatingCal.get("name"),
-                              activatingCal.get("description")
-                            ]
-                          }
-
-                          acted = { a, targetCalendar: null }
-
-                          async.parallel [
-                            ((cb)-> activatingCal.save(cb))
-                            ((cb)-> activatingTextSearch.save(cb))
-                          ], render
+                            else
+                              (new TextSearch {
+                                c: cal,
+                                t: cal.type,
+                                s: [
+                                  cal.name,
+                                  cal.description or ""
+                                ]
+                              }).save render
                 else
                   render()
   else
@@ -197,8 +195,11 @@ router.post '/settings/:calendarId', (req, res) ->
       else
         # This is used so we can redirect when body elements aren't present which throw errors
         redirecterr = (error) ->
-          urlPath = '/organization/settings/' + encodeURIComponent(calendarId)
-          res.redirect urlPath + (if error then '?error=' + error.message else '?saved')
+          urlPath = '/organization/settings/' # + encodeURIComponent(calendarId)
+          if error
+            res.render "error", { error }
+          else
+            res.redirect urlPath + '?saved'
 
         saveCalendar = (error, calendar) ->
           if error?
@@ -230,7 +231,6 @@ router.post '/settings/:calendarId', (req, res) ->
                       ]
 
                       tSearch.save redirecterr
-
               
               newType = if types[req.body.type]? then req.body.type else "I"
               typechanged = newType isnt calendar.type
@@ -255,6 +255,9 @@ router.post '/settings/:calendarId', (req, res) ->
                     .find { cal: calendar }
                     .setOptions { multi: true }
                     .update { $set: { t: newType } }, cb
+                  ),
+                  ((cb) ->
+                    calendar.save(cb)
                   )
                 ], updateTextSearch
 

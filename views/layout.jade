@@ -21,7 +21,8 @@ body
     block content
   footer
     include footer-group
-    script(src="//localhost:9999/devreload.js")
+    if !production
+      script(src="//localhost:9999/devreload.js")
     include analytics-group
     script(src="/coffee/debug.js")
     block footer
