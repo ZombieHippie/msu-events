@@ -1,0 +1,22 @@
+extends layout
+
+block nav
+  - var browser = true
+
+//- Organization needs to be logged in
+block content
+  .row.text-center.w
+    h1.c-g Browse Calendars
+  include filter-component
+  .row
+    .col-xs-12
+      .m-p
+        each calendar in cales
+          article(style="padding:.5em 1em; background-color: #f5f5f5; margin: 1em .5em")
+            a(href="/calendar/#{calendar.slug}")
+              h3=calendar.name
+            h4(style="text-transform:uppercase")=allTypes[calendar.type]
+            div(style="border-bottom: 1px solid " + calendar.color)
+            br
+            if calendar.description && calendar.description.length
+              p=calendar.description

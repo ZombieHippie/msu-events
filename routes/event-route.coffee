@@ -69,6 +69,30 @@ router.get '/today', (req, res) ->
     dayView req, res
 
 # Browse groups
+router.get '/browse', (req, res) ->
+  qpage = req.query.page
+  qpage = parseInt(qpage) or 0
+
+  qtypes = req.query.types or allTypess
+
+  Calendar.find()
+  .select 'calendarId type name slug description color'
+  .limit 10
+  .skip qpage
+  .where("type").in qtypes.split("")
+  .exec (error, calendars) ->
+    if error
+      res.render "error", { error }
+
+    else
+      res.render("calendar-list-browse", {
+        cales: calendars,
+        page: qpage,
+        types: qtypes,
+        allTypes,
+        filterOpen: req.query.types? and req.query.types isnt allTypess 
+      })
+
 router.get '/search', (req, res) ->
   qtypes = req.query.types or allTypess
 

@@ -6,7 +6,7 @@ block head
     .loc {color:green}
 
 block nav
-
+  - var search=true
 
 //- Organization needs to be logged in
 block content
@@ -48,14 +48,13 @@ block content
                     small=calendar.name
                 p.loc=evM.i.loc
               else
-                h3=calendar.name
+                a(href="/calendar/#{calendar.slug}")
+                  h3=calendar.name
                 h4(style="text-transform:uppercase")=allTypes[calendar.type]
                 div(style="border-bottom: 1px solid " + calendar.color)
                 br
                 if calendar.description && calendar.description.length
                   p=calendar.description
-                br
-                pre=calendar.calendarId
           if !production
             pre=JSON.stringify(docs,null,2)
         else

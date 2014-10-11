@@ -164,9 +164,21 @@ router.get '/settings', (req, res) ->
                             suspended: false
                           }
 
+                          activatingTextSearch = new TextSearch {
+                            c: activatingCal,
+                            t: activatingCal.get("type"),
+                            s: [
+                              activatingCal.get("name"),
+                              activatingCal.get("description")
+                            ]
+                          }
+
                           acted = { a, targetCalendar: null }
 
-                          activatingCal.save render
+                          async.parallel [
+                            ((cb)-> activatingCal.save(cb))
+                            ((cb)-> activatingTextSearch.save(cb))
+                          ], render
                 else
                   render()
   else

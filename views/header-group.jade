@@ -2,17 +2,25 @@ style.
   @media(max-width: 800px) {
     .header-group small { display: none }
   }
-  .header-group .btn-group { height: 2em; width: 100%; }
+  .header-group .btn-group { height: 2em; position: absolute; }
+  .header-group .btn-group-justified { right:38px; left: 0; display: block; width: auto }
+  .header-group .search-btn { top: 0; right: 0; width: 38px }
+  .header-group .search-btn .btn { height: 32px }
   .header-group .btn-group .btn { border: none; border-radius: 0; }
   .header-group .btn-group .btn.selected { background: #deefff; }
   .ma { background: #e0e0e0 }
   .mb { background: #e8e8e8 }
   .mc { background: #efefef }
+  .md { background: #f6f6f6 }
 .container.text-center.header-group.w
   a.row(href="/")
     img(src="/graphics/missouri-state-events-logo.png" style="padding:5%; max-width: 90%" alt="MissouriState.events")
-  block nav  
-  .btn-group.btn-group-justified
-    a.btn.btn-default.ma(href="/today" class=(todayr?"selected":"")) Today
-    a.btn.btn-default.mb(href="/week" class=(weekr?"selected":"")) Week
-    a.btn.btn-default.mc(href="/browse" class=(browser?"selected":"")) Browse
+  block nav
+  div(style="position:relative; height: 32px")
+    .btn-group.btn-group-justified
+      a.btn.btn-default.ma(href="/today" class=(todayr?"selected":"")) Today
+      a.btn.btn-default.mb(href="/week" class=(weekr?"selected":"")) Week
+      a.btn.btn-default.mc(href="/browse" class=(browser?"selected":"")) Browse
+    .btn-group.search-btn
+      a.btn.btn-default.md(href="/search" class=(search?"selected":""))
+        span.glyphicon.glyphicon-search
