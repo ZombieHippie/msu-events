@@ -18,9 +18,9 @@ style.
   block nav
   div(style="position:relative; height: 32px")
     .btn-group.btn-group-justified
-      a.btn.btn-default.ma(href="/today" class=(todayr?"selected":"")) Today
-      a.btn.btn-default.mb(href="/week" class=(weekr?"selected":"")) Week
-      a.btn.btn-default.mc(href="/browse" class=(browser?"selected":"")) Browse
+      a.btn.btn-default.ma(href="/today" class=(todayr?"selected":"") alt="Events by day" title="Events by day") Today
+      a.btn.btn-default.mb(href="/week" class=(weekr?"selected":"") alt="Events by week" title="Events by week") Week
+      a.btn.btn-default.mc(href="/browse" class=(browser?"selected":"") alt="Browse available calendars" title="Browse available calendars") Browse
     .btn-group.search-btn
-      a.btn.btn-default.md(href="/search" class=(search?"selected":""))
+      a.btn.btn-default.md(href="/search" class=(search?"selected":"") alt="Search Calendars and Events" title="Search Calendars and Events")
         span.glyphicon.glyphicon-search
