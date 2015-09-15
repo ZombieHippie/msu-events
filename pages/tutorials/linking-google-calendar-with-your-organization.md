@@ -2,11 +2,11 @@
 
 This tutorial shows you how to obtain your Google Calendar's ID to use with your organization.
 
-![Calendar homepage link to settings](/graphics/tutorial-link-id/google-calendar-share-calendar-5.png)
+![Calendar homepage link to settings](/static/graphics/tutorial-link-id/google-calendar-share-calendar-5.png)
 
-![Calendar settings page](/graphics/tutorial-link-id/google-calendar-share-calendar-5-before-scroll-find-id.png)
+![Calendar settings page](/static/graphics/tutorial-link-id/google-calendar-share-calendar-5-before-scroll-find-id.png)
 
-![Settings page scrolled down](/graphics/tutorial-link-id/google-calendar-share-calendar-5-find-id.png)
+![Settings page scrolled down](/static/graphics/tutorial-link-id/google-calendar-share-calendar-5-find-id.png)
 
 Now that we have located our calendar's ID, we will link it to your organization.
 <br>
