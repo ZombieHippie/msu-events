@@ -1,6 +1,89 @@
 MOState Events
 ======
 
+This is a full application for indexing events from multiple Google Calendars, and displaying those events.
+
+The core functionality of this code was developed October 2014.
+
+## Screenshots
+
+### Browsing Calendars
+
+We can view all calendars which are indexed by the application.
+
+![Browse](screenshots/browse_1.png)
+
+### Organization Settings
+
+Setting up and configuring organization.
+
+**Control Panel**
+
+![Organization Settings control Panel](screenshots/organization_settings_1.png)
+![View of Calendar Settings from Desktop](screenshots/organization_settings_desktop.png)
+
+#### Suspending a Calendar
+
+Suspending a calendar allows operators to keep track of the events and continue to keep indexes up to date,
+but removes the events from being searchable or findable.
+![Organization Setting Option: Suspend](screenshots/organization_settings_option=suspend_1.png)
+
+#### Deleting a Calendar
+
+Delete all data related to this calendar.
+
+![Organization Setting Option: Delete](screenshots/organization_settings_option=delete_1.png)
+
+#### Editing a Calendar
+
+We can rename and categorize calendars.
+
+![Editing the Peanut Butter and Jelly Club Calendar](screenshots/organization_settings_peanut-butter-jelly-club_1.png)
+![Editing the Computer Science Club Calendar](screenshots/organization_settings_computer-science-club_1.png)
+
+![Editing the Covalent Grind Calendar](screenshots/organization_settings_covalent-grind_1.png)
+
+### View Events by Calendar
+
+In this view, when we click "subscribe" to the calendar, it directs us to
+our Google Calendar settings page, and adds the calendar to our calendars.
+
+For this to work, the calendar must be available to public.
+![Viewing Events from the Covalent Social Events Calendar](screenshots/calendar_covalent-social-events_1.png)
+
+### Search Calendars and Events
+
+We create an index of all events and organization's titles and descriptions to be queried.
+
+![Searching for Events and Organizations "pb"](screenshots/search_pb_1.png)
+
+### View Events by Day
+
+![](screenshots/day_page=3_1-event.png)
+![](screenshots/day_page=10.png)
+
+![](screenshots/day_page=10_1-event.png)
+
+
+
+### View Events by Week
+
+![](screenshots/week_0.png)
+![](screenshots/week_1.png)
+![](screenshots/week_1_alt.png)
+![](screenshots/week_1_scroll1.png)
+![](screenshots/week_1_scroll2.png)
+
+**Applying filters to Events**
+
+![Week with Filters open](screenshots/week_no-filter_1.png)
+
+Here, we have narrowed down our selection to just `Academic` categorized calendars.
+![Week with Filter: Academic](screenshots/week_filter=academic_1.png)
+
+
+
+
 ## Getting Started
 
 Clone Repository, and install Mongodb (which we will use for our database).
