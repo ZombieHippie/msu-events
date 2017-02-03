@@ -13,10 +13,10 @@ The core functionality of this code was developed October 2014.
 
 Overview of App from Mobile View.
 
-![Mobile: Search for Events and Organizations "topics"](screenshots/mobile_search_query=topics.png)
-![Mobile: Day View](screenshots/mobile_day_1.png)
-![Mobile: Week View](screenshots/mobile_week_1.png)
-![Mobile: Browse View](screenshots/mobile_browse_filter=open.png)
+| Search Events | Browse Multiple Calendars |
+| ----- | ---- |
+| ![Mobile: Search for Events and Organizations "topics"](screenshots/mobile_search_query=topics.png) | ![Mobile: Browse View](screenshots/mobile_browse_filter=open.png) |
+| ![Mobile: Week View](screenshots/mobile_week_1.png) | ![Mobile: Day View](screenshots/mobile_day_1.png) |
 
 
 ### Browsing Calendars
