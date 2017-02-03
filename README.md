@@ -69,6 +69,14 @@ We create an index of all events and organization's titles and descriptions to b
 
 ![Searching for Events and Organizations "pb"](screenshots/search_pb_1.png)
 
+### Application Tutorial Pages
+
+Provided in the application are instructions for Organizations to add their calendars through the Admin.
+
+![How to Create a Calendar](screenshots/pages_tutorial_create_1.png)
+![How to Submit a Calendar](screenshots/pages_tutorial_submit_1.png)
+![How to Submit a Calendar page 2](screenshots/pages_tutorial_submit_2.png)
+
 ### Day View
 
 ![](screenshots/day_page=3_1-event.png)
