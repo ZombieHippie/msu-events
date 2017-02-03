@@ -7,9 +7,21 @@ It has searching capabilities, and was originally built mobile-first with Bootst
 
 The core functionality of this code was developed October 2014.
 
-## Screenshots
+# Screenshots
 
-### Mobile First
+ * [Mobile First](#mobile-first)
+ * [Browsing Calendars](#browsing-calendars)
+ * [Organization Settings](#organization-settings)
+   * [Suspending a Calendar](#suspending-a-calendar)
+   * [Deleting a Calendar](#deleting-a-calendar)
+   * [Editing a Calendar](#editing-a-calendar)
+ * [Search Calendars and Events](#search-calendars-and-events)
+ * [Application Tutorial Pages](#application-tutorial-pages)
+ * [Calendar View](#calendar-view)
+ * [Day View](#day-view)
+ * [Week View](#week-view)
+
+## Mobile First
 
 Overview of App from Mobile View.
 
@@ -19,13 +31,13 @@ Overview of App from Mobile View.
 | ![Mobile: Week View](screenshots/mobile_week_1.png) | ![Mobile: Day View](screenshots/mobile_day_1.png) |
 
 
-### Browsing Calendars
+## Browsing Calendars
 
 We can view all calendars which are indexed by the application.
 
 ![Browse](screenshots/browse_1.png)
 
-### Organization Settings
+## Organization Settings
 
 Setting up and configuring organization.
 
@@ -34,19 +46,19 @@ Setting up and configuring organization.
 ![Organization Settings control Panel](screenshots/organization_settings_1.png)
 ![View of Calendar Settings from Desktop](screenshots/organization_settings_desktop.png)
 
-#### Suspending a Calendar
+### Suspending a Calendar
 
 Suspending a calendar allows operators to keep track of the events and continue to keep indexes up to date,
 but removes the events from being searchable or findable.
 ![Organization Setting Option: Suspend](screenshots/organization_settings_option=suspend_1.png)
 
-#### Deleting a Calendar
+### Deleting a Calendar
 
 Delete all data related to this calendar.
 
 ![Organization Setting Option: Delete](screenshots/organization_settings_option=delete_1.png)
 
-#### Editing a Calendar
+### Editing a Calendar
 
 We can rename and categorize calendars.
 
@@ -55,21 +67,13 @@ We can rename and categorize calendars.
 
 ![Editing the Covalent Grind Calendar](screenshots/organization_settings_covalent-grind_1.png)
 
-### Calendar View
-
-In this view, when we click "subscribe" to the calendar, it directs us to
-our Google Calendar settings page, and adds the calendar to our calendars.
-
-For this to work, the calendar must be available to public.
-![Viewing Events from the Covalent Social Events Calendar](screenshots/calendar_covalent-social-events_1.png)
-
-### Search Calendars and Events
+## Search Calendars and Events
 
 We create an index of all events and organization's titles and descriptions to be queried.
 
 ![Searching for Events and Organizations "pb"](screenshots/search_pb_1.png)
 
-### Application Tutorial Pages
+## Application Tutorial Pages
 
 Provided in the application are instructions for Organizations to add their calendars through the Admin.
 
@@ -77,14 +81,26 @@ Provided in the application are instructions for Organizations to add their cale
 ![How to Submit a Calendar](screenshots/pages_tutorial_submit_1.png)
 ![How to Submit a Calendar page 2](screenshots/pages_tutorial_submit_2.png)
 
-### Day View
+## Calendar View
+
+In this view, when we click "subscribe" to the calendar, it directs us to
+our Google Calendar settings page, and adds the calendar to our calendars.
+
+For this to work, the calendar must be available to public.
+![Viewing Events from the Covalent Social Events Calendar](screenshots/calendar_covalent-social-events_1.png)
+
+## Day View
+
+All Events happening during the selected day.
 
 ![](screenshots/day_page=3_1-event.png)
 ![](screenshots/day_page=10.png)
 
 ![](screenshots/day_page=10_1-event.png)
 
-### Week View
+## Week View
+
+All Events happening during the selected week.
 
 ![](screenshots/week_0.png)
 ![](screenshots/week_1.png)
