@@ -1,1 +1,11 @@
+.DS_Store
 node_modules
+
+# Logs
+*.log
+
+# Secret env vars
+dev.sh
+
+# Data directory for mongodb, `mongod --dbpath="data"`
+data
