@@ -9,3 +9,4 @@ dev.sh
 
 # Data directory for mongodb, `mongod --dbpath="data"`
 data
+data*
