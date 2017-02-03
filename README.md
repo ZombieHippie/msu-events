@@ -3,9 +3,21 @@ MOState Events
 
 This is a full application for indexing events from multiple Google Calendars, and displaying those events.
 
+It has searching capabilities, and was originally built mobile-first with Bootstrap.
+
 The core functionality of this code was developed October 2014.
 
 ## Screenshots
+
+### Mobile First
+
+Overview of App from Mobile View.
+
+![Mobile: Search for Events and Organizations "topics"](screenshots/mobile_search_query=topics.png)
+![Mobile: Day View](screenshots/mobile_day_1.png)
+![Mobile: Week View](screenshots/mobile_week_1.png)
+![Mobile: Browse View](screenshots/mobile_browse_filter=open.png)
+
 
 ### Browsing Calendars
 
@@ -43,7 +55,7 @@ We can rename and categorize calendars.
 
 ![Editing the Covalent Grind Calendar](screenshots/organization_settings_covalent-grind_1.png)
 
-### View Events by Calendar
+### Calendar View
 
 In this view, when we click "subscribe" to the calendar, it directs us to
 our Google Calendar settings page, and adds the calendar to our calendars.
@@ -57,16 +69,14 @@ We create an index of all events and organization's titles and descriptions to b
 
 ![Searching for Events and Organizations "pb"](screenshots/search_pb_1.png)
 
-### View Events by Day
+### Day View
 
 ![](screenshots/day_page=3_1-event.png)
 ![](screenshots/day_page=10.png)
 
 ![](screenshots/day_page=10_1-event.png)
 
-
-
-### View Events by Week
+### Week View
 
 ![](screenshots/week_0.png)
 ![](screenshots/week_1.png)
