@@ -5,7 +5,7 @@ This is a full application for indexing events from multiple Google Calendars, a
 
 It has searching capabilities, and was originally built mobile-first with Bootstrap.
 
-The core functionality of this code was developed October 2014.
+This project was developed October 2014.
 
 # Screenshots
 
